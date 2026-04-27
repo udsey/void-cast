@@ -12,6 +12,7 @@ export default function App() {
   const [error, setError] = useState(null)
   const [initialPosition, setInitialPosition] = useState(null)
   const [isRedirecting, setIsRedirecting] = useState(false)
+  const [currentViewPosition, setCurrentViewPosition] = useState({ x: 0, y: 0 })  // ← ADD THIS
 
   // Handle coordinate parsing and redirection
   useEffect(() => {
@@ -118,10 +119,14 @@ export default function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a0a0a', position: 'relative' }}>
-      <VoidCloud casts={casts} initialPosition={initialPosition} />
+      <VoidCloud 
+        casts={casts} 
+        initialPosition={initialPosition}
+        onViewChange={setCurrentViewPosition}  // ← PASS THIS
+      />
       <Nav />
       <div style={{ position: 'relative', zIndex: 100, pointerEvents: 'auto' }}>
-        <VoidInput />
+        <VoidInput currentViewPosition={currentViewPosition} />
       </div>
     </div>
   )

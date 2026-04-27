@@ -2,12 +2,12 @@ import './config.js'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import { castsRoute } from './routes/casts.js'
-import { fileURLToPath } from 'url'      // ← ADD
-import { dirname, join } from 'path'     // ← ADD
-import fs from 'fs/promises'             // ← ADD
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
+import fs from 'fs/promises'
 
-const __filename = fileURLToPath(import.meta.url)  // ← ADD
-const __dirname = dirname(__filename)              // ← ADD
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const app = Fastify({ logger: true })
 
@@ -17,17 +17,38 @@ await app.register(cors, {
   methods: ['GET', 'POST', 'OPTIONS'],
 })
 
-// SSE inline
+// SSE inline with better error handling
 const clients = new Set()
 
 app.decorate('sse', {
   broadcast: (data) => {
-    const message = `data: ${JSON.stringify(data)}\n\n`
-    clients.forEach((client) => client.write(message))
+    try {
+      // Validate data before broadcasting
+      if (!data || typeof data !== 'object') {
+        console.error('Invalid broadcast data:', data)
+        return
+      }
+      
+      const message = `data: ${JSON.stringify(data)}\n\n`
+      console.log('Broadcasting to', clients.size, 'clients:', data.id || 'unknown')
+      
+      clients.forEach((client) => {
+        try {
+          client.write(message)
+        } catch (err) {
+          console.error('Error writing to client:', err)
+          clients.delete(client)
+        }
+      })
+    } catch (err) {
+      console.error('Broadcast error:', err)
+    }
   }
 })
 
 app.get('/api/sse', (request, reply) => {
+  console.log('SSE connection requested')
+  
   reply.raw.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
@@ -35,27 +56,29 @@ app.get('/api/sse', (request, reply) => {
     'X-Accel-Buffering': 'no',
   })
 
-  reply.raw.write('data: {"type":"connected"}\n\n')
+  // Send initial connection message
+  const initMessage = 'data: {"type":"connected"}\n\n'
+  console.log('Sending init message:', initMessage)
+  reply.raw.write(initMessage)
+  
   clients.add(reply.raw)
+  console.log('Client connected, total clients:', clients.size)
 
   request.raw.on('close', () => {
     clients.delete(reply.raw)
     console.log('Client disconnected, total clients:', clients.size)
   })
 
-  console.log('Client connected, total clients:', clients.size)
-
   // keep connection open
   return new Promise(() => {})
 })
-
 
 await app.register(castsRoute, { prefix: '/api' })
 
 app.get('/health', async () => ({ status: 'ok' }))
 
 // ──────────────────────────────────────────────────────────────
-// ADD THIS: Catch-all route for client-side routing (production)
+// Catch-all route for client-side routing (production)
 // ──────────────────────────────────────────────────────────────
 if (process.env.NODE_ENV === 'production') {
   const clientDistPath = join(__dirname, '../client/dist')
@@ -63,7 +86,7 @@ if (process.env.NODE_ENV === 'production') {
   // Serve static files from client/dist
   await app.register(import('@fastify/static'), {
     root: clientDistPath,
-    prefix: '/',  // Serve at root
+    prefix: '/',
   })
   
   // For any route not matching API or static files, serve index.html

@@ -1,15 +1,24 @@
 import { db } from '../db/index.js'
 import { casts } from '../db/schema.js'
-import { desc } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 
-const MAX_LINE_LENGTH = parseInt(process.env.MAX_LINE_LENGTH)
-const MAX_LINES = parseInt(process.env.MAX_LINES)
+// At the top of routes/casts.js, add these with proper fallbacks
+const MAX_LINE_LENGTH = parseInt(process.env.MAX_LINE_LENGTH) 
+const MAX_LINES = parseInt(process.env.MAX_LINES) 
+
+// World bounds from env (with fallbacks)
+const WORLD_SIZE = parseFloat(process.env.WORLD_SIZE) 
+const BASE_FONT_SIZE = parseFloat(process.env.BASE_FONT_SIZE) 
+const FONT_SIZE_VARIANCE = parseFloat(process.env.FONT_SIZE_VARIANCE) 
+
+// Drift configuration (with fallbacks)
+// Directional drift configuration
+const DRIFT_SPEED_MIN = parseFloat(process.env.DRIFT_SPEED_MIN) || 5
+const DRIFT_SPEED_MAX = parseFloat(process.env.DRIFT_SPEED_MAX) || 25
 
 const splitIntoLines = (text) => {
-  // first break any word longer than MAX_LINE_LENGTH
   const normalized = text.trim().replace(/\S+/g, (word) => {
     if (word.length <= MAX_LINE_LENGTH) return word
-    // chunk it into MAX_LINE_LENGTH pieces
     return word.match(new RegExp(`.{1,${MAX_LINE_LENGTH}}`, 'g')).join(' ')
   })
 
@@ -29,6 +38,34 @@ const splitIntoLines = (text) => {
   return lines
 }
 
+// Deterministic seeded random generator
+function seededRandom(seed) {
+  let state = seed
+  return function() {
+    state = (state * 1103515245 + 12345) & 0x7fffffff
+    return state / 0x7fffffff
+  }
+}
+
+// Generate deterministic properties for a cast (except position)
+function generateDeterministicProperties(castId, text) {
+  let seed = 0
+  const seedStr = `${castId}-${text}`
+  for (let i = 0; i < seedStr.length; i++) {
+    seed = ((seed << 5) - seed) + seedStr.charCodeAt(i)
+    seed |= 0
+  }
+  
+  const rng = seededRandom(Math.abs(seed))
+  
+    return {
+    rotation: 0,
+    fontSize: BASE_FONT_SIZE + (rng() - 0.5) * FONT_SIZE_VARIANCE,
+    driftDirection: rng() * Math.PI * 2,
+    driftSpeed: DRIFT_SPEED_MIN + rng() * (DRIFT_SPEED_MAX - DRIFT_SPEED_MIN),
+  }
+}
+
 export async function castsRoute(app) {
   // GET /api/casts
   app.get('/casts', async (request, reply) => {
@@ -38,24 +75,24 @@ export async function castsRoute(app) {
         .from(casts)
         .orderBy(desc(casts.createdAt))
         .limit(parseInt(process.env.CASTS_LIMIT) || 200)
-
       return reply.send(allCasts)
     } catch (err) {
-      console.error('❌ Fetch error:', err)
-      reply.status(500).send({ error: 'Failed to fetch casts', detail: err.message })
+      console.error('Fetch error:', err)
+      return reply.send([])
     }
   })
 
   // POST /api/cast
   app.post('/cast', async (request, reply) => {
-    const { text } = request.body
+    const { text, x, y } = request.body  // ← GET x, y from request
+
+    console.log('📝 Received cast:', { text: text?.substring(0, 50), x, y })
 
     if (!text || text.trim() === '') {
       return reply.status(400).send({ error: 'Text cannot be empty' })
     }
 
     const lines = splitIntoLines(text)
-
     if (lines.length > MAX_LINES) {
       return reply.status(400).send({
         error: `Too long — max ${MAX_LINES} lines of ${MAX_LINE_LENGTH} chars each`
@@ -65,16 +102,32 @@ export async function castsRoute(app) {
     const formatted = lines.join('\n')
 
     try {
-      const newCast = await db
+      // Generate deterministic properties (position will come from user)
+      const props = generateDeterministicProperties(0, formatted)
+      
+      // Insert with user's position
+      const [newCast] = await db
         .insert(casts)
-        .values({ text: formatted })
+        .values({
+          text: formatted,
+          x: x || 0,  // ← USE USER'S X POSITION (from view center)
+          y: y || 0,  // ← USE USER'S Y POSITION (from view center)
+          rotation: props.rotation,
+          fontSize: props.fontSize,
+          driftDirection: props.driftDirection || 0,
+          driftSpeed: props.driftSpeed || 10,
+        })
         .returning()
 
-      app.sse.broadcast(newCast[0])
-      return reply.status(201).send(newCast[0])
+      console.log('✅ Cast created at user position:', { x: x || 0, y: y || 0, id: newCast.id })
+      
+      // Broadcast to SSE clients
+      app.sse.broadcast(newCast)
+      
+      return reply.status(201).send(newCast)
     } catch (err) {
-      console.error('❌ Full error:', err)
-      reply.status(500).send({ error: err.message })
+      console.error('❌ Create error:', err)
+      return reply.status(500).send({ error: 'Failed to create cast', details: err.message })
     }
   })
 }

@@ -17,19 +17,44 @@ export function useSSE(onNewCast) {
     }
 
     eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-      if (data.type === 'connected') return
-      onNewCastRef.current(data) // ← use ref, not closure
+      try {
+        // Skip empty messages
+        if (!event.data || event.data.trim() === '') {
+          console.warn('Empty SSE message received')
+          return
+        }
+        
+        console.log('Raw SSE data:', event.data)
+        
+        const data = JSON.parse(event.data)
+        
+        if (data.type === 'connected') {
+          console.log('SSE handshake complete')
+          return
+        }
+        
+        // Handle new cast
+        if (data.id && data.text) {
+          console.log('New cast received via SSE:', data.id)
+          onNewCastRef.current({ ...data, isNew: true })
+        }
+      } catch (err) {
+        console.error('Failed to parse SSE message:', err)
+        console.error('Raw data that failed:', event.data)
+      }
     }
 
     eventSource.onerror = (error) => {
       console.error('❌ SSE error:', error)
-      eventSource.close()
-      setTimeout(connect, 3000)
+      if (eventSource.readyState === EventSource.CLOSED) {
+        console.log('Reconnecting SSE in 3 seconds...')
+        eventSource.close()
+        setTimeout(connect, 3000)
+      }
     }
 
     return eventSource
-  }, []) // ← no deps, connect never recreates
+  }, [])
 
   useEffect(() => {
     const eventSource = connect()

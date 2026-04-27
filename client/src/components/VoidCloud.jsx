@@ -1,26 +1,38 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import * as d3 from 'd3'
 import { useWordCloud } from '../hooks/useWordCloud.js'
 
 // ── tuneable variables ──────────────────────────────
-const DRIFT_DURATION_MIN = parseInt(import.meta.env.VITE_DRIFT_DURATION_MIN)
-const DRIFT_DURATION_MAX = parseInt(import.meta.env.VITE_DRIFT_DURATION_MAX)
 const SHRINK_DURATION    = parseInt(import.meta.env.VITE_SHRINK_DURATION)
 const NEW_CAST_SIZE_MULT = parseFloat(import.meta.env.VITE_NEW_CAST_SIZE_MULT)
 const BASE_FONT_SIZE     = parseInt(import.meta.env.VITE_BASE_FONT_SIZE)
 const FONT_SIZE_VARIANCE = parseInt(import.meta.env.VITE_FONT_SIZE_VARIANCE)
 const INITIAL_ZOOM       = parseFloat(import.meta.env.VITE_INITIAL_ZOOM)
-const BASE_SPREAD = parseFloat(import.meta.env.VITE_BASE_SPREAD)
 // ────────────────────────────────────────────────────
 
-export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosition prop
+export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← ADD onViewChange
   const svgRef = useRef(null)
+  const animationRefs = useRef(new Map())
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth,
     height: window.innerHeight
   })
 
-  const words = useWordCloud(casts, dimensions.width, dimensions.height)
+  const words = useWordCloud(casts)
+
+  // Get current view center in world coordinates
+  const getCurrentViewCenter = useCallback(() => {
+    if (!svgRef.current) return { x: 0, y: 0 }
+    
+    const transform = d3.zoomTransform(svgRef.current)
+    const width = dimensions.width
+    const height = dimensions.height
+    
+    const centerX = (width / 2 - transform.x) / transform.k
+    const centerY = (height / 2 - transform.y) / transform.k
+    
+    return { x: centerX, y: centerY }
+  }, [dimensions])
 
   // handle window resize
   useEffect(() => {
@@ -31,7 +43,7 @@ export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosit
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // setup zoom with initial position support
+  // setup zoom with initial position support and view tracking
   useEffect(() => {
     if (!svgRef.current) return
     const svg = d3.select(svgRef.current)
@@ -40,14 +52,12 @@ export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosit
     let initialTransform
     
     if (initialPosition) {
-      // Use provided coordinates from URL
       const tx = dimensions.width / 2 - initialPosition.x * INITIAL_ZOOM
       const ty = dimensions.height / 2 - initialPosition.y * INITIAL_ZOOM
       initialTransform = d3.zoomIdentity
         .translate(tx, ty)
         .scale(INITIAL_ZOOM)
     } else {
-      // Fallback to center of screen
       initialTransform = d3.zoomIdentity
         .translate(dimensions.width / 2, dimensions.height / 2)
         .scale(INITIAL_ZOOM)
@@ -57,11 +67,61 @@ export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosit
       .scaleExtent([0.2, 5])
       .on('zoom', (event) => {
         g.attr('transform', event.transform)
+        // Notify parent of view change
+        if (onViewChange) {
+          const center = getCurrentViewCenter()
+          onViewChange(center)
+        }
       })
 
     svg.call(zoom)
     svg.call(zoom.transform, initialTransform)
-  }, [dimensions, initialPosition])  // ← ADD initialPosition to dependency array
+    
+    // Initial view center notification
+    if (onViewChange) {
+      setTimeout(() => {
+        const center = getCurrentViewCenter()
+        onViewChange(center)
+      }, 100)
+    }
+  }, [dimensions, initialPosition, onViewChange, getCurrentViewCenter])
+
+  // Clean up animations on unmount
+  useEffect(() => {
+    return () => {
+      animationRefs.current.forEach((id, element) => {
+        if (id) cancelAnimationFrame(id)
+      })
+      animationRefs.current.clear()
+    }
+  }, [])
+
+
+    // Smooth random walk using sine waves with different phases
+// Replace the startDrift function
+const startDrift = useCallback((element, word) => {
+  if (animationRefs.current.has(element)) {
+    cancelAnimationFrame(animationRefs.current.get(element))
+  }
+  
+  const startTime = performance.now() / 1000
+  
+  const animate = () => {
+    const now = performance.now() / 1000
+    const dt = now - startTime
+    
+    // Linear movement in direction
+    const currentX = word.driftStartX + (dt * word.driftSpeed * Math.cos(word.driftDirection))
+    const currentY = word.driftStartY + (dt * word.driftSpeed * Math.sin(word.driftDirection))
+    
+    element.attr('transform', `translate(${currentX},${currentY})`)
+    
+    const frameId = requestAnimationFrame(animate)
+    animationRefs.current.set(element, frameId)
+  }
+  
+  animate()
+}, [])
 
   // render and animate words
   useEffect(() => {
@@ -70,32 +130,18 @@ export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosit
     const svg = d3.select(svgRef.current)
     const g = svg.select('g.cloud-group')
 
-    const spread = BASE_SPREAD * Math.max(1, Math.sqrt(words.length / 10))
-
-    const randomX = () => (Math.random() - 0.5) * dimensions.width * spread
-    const randomY = () => (Math.random() - 0.5) * dimensions.height * spread
-    const randomSize = () => BASE_FONT_SIZE + (Math.random() - 0.5) * FONT_SIZE_VARIANCE
-
-    const drift = (selection) => {
-      const newX = randomX()
-      const newY = randomY()
-      const rotate = selection.attr('data-rotate')
-
-      selection
-        .transition()
-        .duration(DRIFT_DURATION_MIN + Math.random() * (DRIFT_DURATION_MAX - DRIFT_DURATION_MIN))
-        .ease(d3.easeSinInOut)
-        .attr('transform', `translate(${newX},${newY})rotate(${rotate})`)
-        .on('end', function() {
-          drift(d3.select(this))
-        })
-    }
-
     const text = g
       .selectAll('text')
       .data(words, (d) => d.id)
 
-    text.exit().remove()
+    // Stop animations for exiting elements
+    text.exit().each(function(d) {
+      const el = d3.select(this)
+      if (animationRefs.current.has(el.node())) {
+        cancelAnimationFrame(animationRefs.current.get(el.node()))
+        animationRefs.current.delete(el.node())
+      }
+    }).remove()
 
     const entered = text.enter()
       .append('text')
@@ -105,14 +151,13 @@ export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosit
       .attr('font-weight', 'bold')
       .attr('fill', 'white')
       .attr('pointer-events', 'none')
-      .attr('data-rotate', (d) => d.rotate || 0)
       .attr('data-id', (d) => d.id)
 
-    // existing words
+    // existing words - render at their deterministic position
     entered.filter((d) => !d.isNew)
-      .attr('font-size', () => `${randomSize()}px`)
+      .attr('font-size', (d) => `${d.fontSize}px`)
       .attr('opacity', 0.8)
-      .attr('transform', () => `translate(${randomX()},${randomY()})rotate(0)`)
+      .attr('transform', (d) => `translate(${d.x},${d.y})`)
       .each(function(d) {
         const el = d3.select(this)
         d.text.split('\n').forEach((line, i) => {
@@ -121,17 +166,16 @@ export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosit
             .attr('dy', i === 0 ? 0 : '1.2em')
             .text(line)
         })
-        drift(el)
+        // Start deterministic drift
+        startDrift(el, d)
       })
 
-    // new cast
+          // new cast - animated entrance, then deterministic drift
     entered.filter((d) => d.isNew)
       .each(function(d) {
         const el = d3.select(this)
-        const finalSize = randomSize()
-        const targetX = randomX()
-        const targetY = randomY()
-
+        const finalSize = d.fontSize
+        
         // render tspan lines
         d.text.split('\n').forEach((line, i) => {
           el.append('tspan')
@@ -139,10 +183,13 @@ export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosit
             .attr('dy', i === 0 ? 0 : '1.2em')
             .text(line)
         })
+        
+        // Store drift start time for consistent animation
+        d.driftStartTime = performance.now() / 1000
 
         el
           .attr('font-size', `${finalSize * NEW_CAST_SIZE_MULT}px`)
-          .attr('transform', `translate(0,0)rotate(0)`)
+          .attr('transform', `translate(${d.x},${d.y})rotate(${d.rotation})`)
           .attr('opacity', 0)
           .transition()
           .duration(400)
@@ -151,16 +198,20 @@ export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosit
           .duration(SHRINK_DURATION)
           .ease(d3.easeCubicOut)
           .attr('font-size', `${finalSize}px`)
-          .transition()
-          .duration(DRIFT_DURATION_MIN + Math.random() * (DRIFT_DURATION_MAX - DRIFT_DURATION_MIN))
-          .ease(d3.easeSinInOut)
-          .attr('transform', `translate(${targetX},${targetY})rotate(0)`)
           .on('end', function() {
-            drift(d3.select(this))
+            startDrift(el, d)
           })
       })
 
-  }, [words])
+    // Update existing words that might have changed
+    text.each(function(d) {
+      const el = d3.select(this)
+      if (!animationRefs.current.has(el.node())) {
+        startDrift(el, d)
+      }
+    })
+
+  }, [words, startDrift])
 
   return (
     <svg
