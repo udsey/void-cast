@@ -1,8 +1,6 @@
-//const WORLD_SIZE = parseInt(import.meta.env.VITE_WORLD_SIZE)
-//const WORLD_SCALE = parseInt(import.meta.env.VITE_WORLD_SCALE)
+const WORLD_SIZE = 1000
+const WORLD_SCALE = 1
 
-const WORLD_SIZE = 200
-const WORLD_SCALE = 10
 
 const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const BASE = BASE62.length

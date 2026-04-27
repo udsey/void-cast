@@ -57,14 +57,6 @@ export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosit
       .scaleExtent([0.2, 5])
       .on('zoom', (event) => {
         g.attr('transform', event.transform)
-        
-        // Optional: Update URL when user pans (uncomment if desired)
-        // const transform = event.transform
-        // const centerX = (dimensions.width / 2 - transform.x) / transform.k
-        // const centerY = (dimensions.height / 2 - transform.y) / transform.k
-        // const { encodePosition } = require('../utils/coordinates.js')
-        // const encoded = encodePosition(centerX, centerY)
-        // window.history.pushState({}, '', `/c/${encoded}`)
       })
 
     svg.call(zoom)
