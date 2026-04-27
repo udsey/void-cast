@@ -144,3 +144,5 @@ vite.config.ts.timestamp-*
 
 # VS Code
 .vscode/*
+
+node_modules/
