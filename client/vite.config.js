@@ -10,8 +10,6 @@ export default defineConfig(({ mode }) => {
     define: {
       'import.meta.env.VITE_MAX_LINE_LENGTH': JSON.stringify(env.VITE_MAX_LINE_LENGTH),
       'import.meta.env.VITE_MAX_LINES': JSON.stringify(env.VITE_MAX_LINES),
-      'import.meta.env.VITE_DRIFT_DURATION_MIN': JSON.stringify(env.VITE_DRIFT_DURATION_MIN),
-      'import.meta.env.VITE_DRIFT_DURATION_MAX': JSON.stringify(env.VITE_DRIFT_DURATION_MAX),
       'import.meta.env.VITE_SHRINK_DURATION': JSON.stringify(env.VITE_SHRINK_DURATION),
       'import.meta.env.VITE_NEW_CAST_SIZE_MULT': JSON.stringify(env.VITE_NEW_CAST_SIZE_MULT),
       'import.meta.env.VITE_BASE_FONT_SIZE': JSON.stringify(env.VITE_BASE_FONT_SIZE),
@@ -20,7 +18,6 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_INPUT_PLACEHOLDER': JSON.stringify(env.VITE_INPUT_PLACEHOLDER),
       'import.meta.env.VITE_BUTTON_TEXT': JSON.stringify(env.VITE_BUTTON_TEXT),
       'import.meta.env.VITE_BUTTON_TEXT_OVER_LIMIT': JSON.stringify(env.VITE_BUTTON_TEXT_OVER_LIMIT),
-      'import.meta.env.VITE_BASE_SPREAD': JSON.stringify(env.VITE_BASE_SPREAD),
       'import.meta.env.VITE_NAV_POSITION': JSON.stringify(env.VITE_NAV_POSITION),
       'import.meta.env.VITE_GITHUB_URL': JSON.stringify(env.VITE_GITHUB_URL),
       },

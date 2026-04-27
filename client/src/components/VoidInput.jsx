@@ -31,7 +31,7 @@ const splitIntoLines = (text) => {
   return lines
 }
 
-export function VoidInput() {
+export function VoidInput({ currentViewPosition }) {  // ← ADD this prop
   const [text, setText] = useState('')
   const [status, setStatus] = useState('idle')
 
@@ -44,12 +44,20 @@ export function VoidInput() {
 
     setStatus('loading')
     try {
-      await api.createCast(text.trim())
+      console.log('Submitting cast:', text.trim())
+      console.log('Current view position:', currentViewPosition)  // ← Log position
+      
+      // Pass the current view position to API
+      const result = await api.createCast(text.trim(), currentViewPosition)
+      
+      console.log('Cast created successfully at:', result.x, result.y)
+      
       setText('')
       setStatus('success')
       setTimeout(() => setStatus('idle'), 2000)
     } catch (err) {
-      console.error(err)
+      console.error('Failed to create cast - Full error:', err)
+      console.error('Error message:', err.message)
       setStatus('error')
       setTimeout(() => setStatus('idle'), 2000)
     }

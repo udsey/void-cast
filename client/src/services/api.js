@@ -1,17 +1,29 @@
 export const api = {
   getCasts: async () => {
+    console.log('Fetching casts...')
     const response = await fetch('/api/casts')
     if (!response.ok) throw new Error('Failed to fetch casts')
     return response.json()
   },
 
-  createCast: async (text) => {
+  createCast: async (text, viewPosition) => {
+    console.log('API: Creating cast with text:', text, 'at position:', viewPosition)
+    
     const response = await fetch('/api/cast', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ 
+        text, 
+        x: viewPosition?.x || 0, 
+        y: viewPosition?.y || 0 
+      }),
     })
-    if (!response.ok) throw new Error('Failed to create cast')
+    
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(`Failed to create cast: ${error}`)
+    }
+    
     return response.json()
   },
 
