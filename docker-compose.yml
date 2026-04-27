@@ -13,4 +13,3 @@ services:
       - void_cast_db_data:/var/lib/postgresql/data
 volumes:
   void_cast_db_data:
-
