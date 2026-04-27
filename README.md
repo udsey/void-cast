@@ -69,5 +69,5 @@ Includes: - API + DB config - Text limits - Animation tuning - UI labels
 
 ## 📄 License
 
--   Code: AGPL-3.0\
+-   Code: AGPL-3.0
 -   Design/Concept: CC BY-NC 4.0
