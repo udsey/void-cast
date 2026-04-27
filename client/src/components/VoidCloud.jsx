@@ -13,7 +13,7 @@ const INITIAL_ZOOM       = parseFloat(import.meta.env.VITE_INITIAL_ZOOM)
 const BASE_SPREAD = parseFloat(import.meta.env.VITE_BASE_SPREAD)
 // ────────────────────────────────────────────────────
 
-export function VoidCloud({ casts }) {
+export function VoidCloud({ casts, initialPosition }) {  // ← ADD initialPosition prop
   const svgRef = useRef(null)
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth,
@@ -31,26 +31,45 @@ export function VoidCloud({ casts }) {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // setup zoom once
+  // setup zoom with initial position support
   useEffect(() => {
     if (!svgRef.current) return
     const svg = d3.select(svgRef.current)
     const g = svg.select('g.cloud-group')
 
+    let initialTransform
+    
+    if (initialPosition) {
+      // Use provided coordinates from URL
+      const tx = dimensions.width / 2 - initialPosition.x * INITIAL_ZOOM
+      const ty = dimensions.height / 2 - initialPosition.y * INITIAL_ZOOM
+      initialTransform = d3.zoomIdentity
+        .translate(tx, ty)
+        .scale(INITIAL_ZOOM)
+    } else {
+      // Fallback to center of screen
+      initialTransform = d3.zoomIdentity
+        .translate(dimensions.width / 2, dimensions.height / 2)
+        .scale(INITIAL_ZOOM)
+    }
+
     const zoom = d3.zoom()
       .scaleExtent([0.2, 5])
       .on('zoom', (event) => {
         g.attr('transform', event.transform)
+        
+        // Optional: Update URL when user pans (uncomment if desired)
+        // const transform = event.transform
+        // const centerX = (dimensions.width / 2 - transform.x) / transform.k
+        // const centerY = (dimensions.height / 2 - transform.y) / transform.k
+        // const { encodePosition } = require('../utils/coordinates.js')
+        // const encoded = encodePosition(centerX, centerY)
+        // window.history.pushState({}, '', `/c/${encoded}`)
       })
 
     svg.call(zoom)
-    svg.call(
-      zoom.transform,
-      d3.zoomIdentity
-        .translate(dimensions.width / 2, dimensions.height / 2)
-        .scale(INITIAL_ZOOM)
-    )
-  }, [])
+    svg.call(zoom.transform, initialTransform)
+  }, [dimensions, initialPosition])  // ← ADD initialPosition to dependency array
 
   // render and animate words
   useEffect(() => {
@@ -59,7 +78,7 @@ export function VoidCloud({ casts }) {
     const svg = d3.select(svgRef.current)
     const g = svg.select('g.cloud-group')
 
-    const spread = BASE_SPREAD * Math.max(1, Math.sqrt(words.length / 10)) // ← here
+    const spread = BASE_SPREAD * Math.max(1, Math.sqrt(words.length / 10))
 
     const randomX = () => (Math.random() - 0.5) * dimensions.width * spread
     const randomY = () => (Math.random() - 0.5) * dimensions.height * spread
@@ -86,68 +105,68 @@ export function VoidCloud({ casts }) {
 
     text.exit().remove()
 
-const entered = text.enter()
-  .append('text')
-  .attr('text-anchor', 'middle')
-  .attr('dominant-baseline', 'central')
-  .attr('font-family', 'Impact, sans-serif')
-  .attr('font-weight', 'bold')
-  .attr('fill', 'white')
-  .attr('pointer-events', 'none')
-  .attr('data-rotate', (d) => d.rotate || 0)
-  .attr('data-id', (d) => d.id)
+    const entered = text.enter()
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'central')
+      .attr('font-family', 'Impact, sans-serif')
+      .attr('font-weight', 'bold')
+      .attr('fill', 'white')
+      .attr('pointer-events', 'none')
+      .attr('data-rotate', (d) => d.rotate || 0)
+      .attr('data-id', (d) => d.id)
 
-// existing words
-entered.filter((d) => !d.isNew)
-  .attr('font-size', () => `${randomSize()}px`)
-  .attr('opacity', 0.8)
-  .attr('transform', () => `translate(${randomX()},${randomY()})rotate(0)`)
-  .each(function(d) {
-    const el = d3.select(this)
-    d.text.split('\n').forEach((line, i) => {
-      el.append('tspan')
-        .attr('x', 0)
-        .attr('dy', i === 0 ? 0 : '1.2em')
-        .text(line)
-    })
-    drift(el)
-  })
-
-// new cast
-entered.filter((d) => d.isNew)
-  .each(function(d) {
-    const el = d3.select(this)
-    const finalSize = randomSize()
-    const targetX = randomX()
-    const targetY = randomY()
-
-    // render tspan lines
-    d.text.split('\n').forEach((line, i) => {
-      el.append('tspan')
-        .attr('x', 0)
-        .attr('dy', i === 0 ? 0 : '1.2em')
-        .text(line)
-    })
-
-    el
-      .attr('font-size', `${finalSize * NEW_CAST_SIZE_MULT}px`)
-      .attr('transform', `translate(0,0)rotate(0)`)
-      .attr('opacity', 0)
-      .transition()
-      .duration(400)
-      .attr('opacity', 1)
-      .transition()
-      .duration(SHRINK_DURATION)
-      .ease(d3.easeCubicOut)
-      .attr('font-size', `${finalSize}px`)
-      .transition()
-      .duration(DRIFT_DURATION_MIN + Math.random() * (DRIFT_DURATION_MAX - DRIFT_DURATION_MIN))
-      .ease(d3.easeSinInOut)
-      .attr('transform', `translate(${targetX},${targetY})rotate(0)`)
-      .on('end', function() {
-        drift(d3.select(this))
+    // existing words
+    entered.filter((d) => !d.isNew)
+      .attr('font-size', () => `${randomSize()}px`)
+      .attr('opacity', 0.8)
+      .attr('transform', () => `translate(${randomX()},${randomY()})rotate(0)`)
+      .each(function(d) {
+        const el = d3.select(this)
+        d.text.split('\n').forEach((line, i) => {
+          el.append('tspan')
+            .attr('x', 0)
+            .attr('dy', i === 0 ? 0 : '1.2em')
+            .text(line)
+        })
+        drift(el)
       })
-  })
+
+    // new cast
+    entered.filter((d) => d.isNew)
+      .each(function(d) {
+        const el = d3.select(this)
+        const finalSize = randomSize()
+        const targetX = randomX()
+        const targetY = randomY()
+
+        // render tspan lines
+        d.text.split('\n').forEach((line, i) => {
+          el.append('tspan')
+            .attr('x', 0)
+            .attr('dy', i === 0 ? 0 : '1.2em')
+            .text(line)
+        })
+
+        el
+          .attr('font-size', `${finalSize * NEW_CAST_SIZE_MULT}px`)
+          .attr('transform', `translate(0,0)rotate(0)`)
+          .attr('opacity', 0)
+          .transition()
+          .duration(400)
+          .attr('opacity', 1)
+          .transition()
+          .duration(SHRINK_DURATION)
+          .ease(d3.easeCubicOut)
+          .attr('font-size', `${finalSize}px`)
+          .transition()
+          .duration(DRIFT_DURATION_MIN + Math.random() * (DRIFT_DURATION_MAX - DRIFT_DURATION_MIN))
+          .ease(d3.easeSinInOut)
+          .attr('transform', `translate(${targetX},${targetY})rotate(0)`)
+          .on('end', function() {
+            drift(d3.select(this))
+          })
+      })
 
   }, [words])
 
