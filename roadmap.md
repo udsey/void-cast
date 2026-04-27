@@ -5,6 +5,7 @@
 - [ ] Consolidate deterministic functions
 - [ ] Database index optimization `(createdAt)`
 - [ ] Share link button with copy to clipboard (captures current view position, updates URL, copies /c/hash)
+- [ ] Update position button (to move to random place)
 - [ ] Basic rate limiting (per IP, 10 casts/minute)
 - [ ] Content disclaimer link in Nav (opens modal with content warning)
 - [ ] Database auto-cleanup (keep last 5000 casts)
