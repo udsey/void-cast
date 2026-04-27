@@ -146,3 +146,4 @@ vite.config.ts.timestamp-*
 .vscode/*
 
 node_modules/
+migrations/
