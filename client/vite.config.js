@@ -21,6 +21,8 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_BUTTON_TEXT': JSON.stringify(env.VITE_BUTTON_TEXT),
       'import.meta.env.VITE_BUTTON_TEXT_OVER_LIMIT': JSON.stringify(env.VITE_BUTTON_TEXT_OVER_LIMIT),
       'import.meta.env.VITE_BASE_SPREAD': JSON.stringify(env.VITE_BASE_SPREAD),
+      'import.meta.env.VITE_NAV_POSITION': JSON.stringify(env.VITE_NAV_POSITION),
+      'import.meta.env.VITE_GITHUB_URL': JSON.stringify(env.VITE_GITHUB_URL),
       },
     server: {
       proxy: {

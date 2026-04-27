@@ -3,6 +3,7 @@ import { VoidCloud } from './components/VoidCloud.jsx'
 import { VoidInput } from './components/VoidInput.jsx'
 import { useSSE } from './hooks/useSSE.js'
 import { api } from './services/api.js'
+import { Nav } from './components/Nav.jsx'
 
 export default function App() {
   const [casts, setCasts] = useState([])
@@ -53,6 +54,7 @@ export default function App() {
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a0a0a', position: 'relative' }}>
       <VoidCloud casts={casts} />
+      <Nav />
       <div style={{ position: 'relative', zIndex: 100, pointerEvents: 'auto' }}>
         <VoidInput />
       </div>
