@@ -8,12 +8,12 @@ export async function castsRoute(app) {
   app.get('/casts', async (request, reply) => {
     try {
       const allCasts = await db
-      .select()
-      .from(casts)
-      .orderBy(desc(casts.createdAt))
-      .limit(parseInt(process.env.CASTS_LIMIT))
-    
-    return reply.send(allCasts)
+        .select()
+        .from(casts)
+        .orderBy(desc(casts.createdAt))
+        .limit(parseInt(process.env.CASTS_LIMIT))
+      
+      return reply.send(allCasts)
       } catch (err) {
       console.error('❌ Cast save error:', err)
       reply.status(500).send({ error: 'Failed to save cast', detail: err.message })
@@ -43,7 +43,7 @@ export async function castsRoute(app) {
 
         // notify SSE clients a new cast was added
         console.log('✅ Inserted:', newCast)
-        app.sse.broadcast('new-cast', newCast[0])
+        app.sse.broadcast(newCast[0])
 
         return reply.status(201).send(newCast[0])
       } catch (err) {
