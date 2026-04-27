@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: void_cast_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5435:${DB_PORT}"
+    volumes:
+      - void_cast_db_data:/var/lib/postgresql/data
+volumes:
+  void_cast_db_data:
+

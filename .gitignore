@@ -144,3 +144,8 @@ vite.config.ts.timestamp-*
 
 # VS Code
 .vscode/*
+
+node_modules/
+
+# Drizzle ORM migrations
+server/db/migrations/
