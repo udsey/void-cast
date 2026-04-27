@@ -28,7 +28,7 @@ export default function App() {
   const handleNewCast = useCallback((newCast) => {
     setCasts((prev) => {
       if (prev.find((c) => c.id === newCast.id)) return prev
-      return [newCast, ...prev]
+      return [{ ...newCast, isNew: true }, ...prev]
     })
   }, [])
 
@@ -51,9 +51,11 @@ export default function App() {
   }
 
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a0a0a' }}>
+    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a0a0a', position: 'relative' }}>
       <VoidCloud casts={casts} />
-      <VoidInput />
+      <div style={{ position: 'relative', zIndex: 100, pointerEvents: 'auto' }}>
+        <VoidInput />
+      </div>
     </div>
   )
 }

@@ -1,7 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
-  --bg: #fff;
+  --bg: #0a0a0a;
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
   --accent: #aa3bff;
@@ -19,7 +32,6 @@
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
-  background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

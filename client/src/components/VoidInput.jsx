@@ -40,7 +40,7 @@ export function VoidInput() {
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="whisper into the void..."
+        placeholder="SCREAM into the void..."
         maxLength={100}
         disabled={status === 'loading'}
         style={{
