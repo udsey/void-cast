@@ -1,14 +1,24 @@
 ## 🚀 void-cast --- Implementation Roadmap
 
 ### 🔴 **LAUNCH BLOCK (Must Have)**
-- [ ] Remove obsolete drift variables from `.env`
-- [ ] Consolidate deterministic functions
-- [ ] Database index optimization `(createdAt)`
-- [ ] Share link button with copy to clipboard (captures current view position, updates URL, copies /c/hash)
-- [ ] Update position button (to move to random place)
-- [ ] Basic rate limiting (per IP, 10 casts/minute)
-- [ ] Content disclaimer link in Nav (opens modal with content warning)
-- [ ] Database auto-cleanup (keep last 5000 casts)
+  #### Formatting
+  - [ ] Remove obsolete drift variables from `.env`
+  - [ ] Consolidate deterministic functions
+  #### Database
+  - [ ] Database index optimization `(createdAt)`
+  - [ ] Database auto-cleanup (keep last 5000 casts)
+  - [ ] In-memory queue for database writes (batch inserts, burst protection)
+  #### Functionality
+  - [ ] Share link button with copy to clipboard (captures current view position, updates URL, copies /c/hash)
+  - [ ] Update position button (to move to random place)
+  - [ ] Donate button (instead of github)
+  #### Sequrity
+  - [ ] Basic rate limiting (per IP, 10 casts/minute)
+  - [ ] Content disclaimer link in Nav (opens modal with content warning)
+  - [ ] Close SSE on idle connection (page visibility API + user inactivity)
+  #### Polish
+  - [ ] Basic mobile responsive layout
+  - [ ] ABOUT.md content (philosophy, rules, credits, disclaimer)
 
 ---
 
@@ -22,7 +32,6 @@
 ---
 
 ### 🟡 **POLISH BLOCK**
-- [ ] ABOUT.md content (philosophy, rules, credits, disclaimer)
 - [ ] Nav hover states (visual feedback on mouse over)
 - [ ] Smooth animations (fade/slide for modals, UI elements)
 
