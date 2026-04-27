@@ -1,40 +1,41 @@
-import { useEffect, useCallback, use } from "react";
-import { api } from "../services/api.js";
+import { useEffect, useCallback, useRef } from 'react'
+import { api } from '../services/api.js'
 
 export function useSSE(onNewCast) {
+  const onNewCastRef = useRef(onNewCast)
+
+  // keep ref up to date without triggering reconnect
+  useEffect(() => {
+    onNewCastRef.current = onNewCast
+  }, [onNewCast])
+
   const connect = useCallback(() => {
-    const eventSource = new EventSource(api.getSSEUrl());
+    const eventSource = new EventSource(api.getSSEUrl())
 
     eventSource.onopen = () => {
       console.log('✅ SSE connected')
     }
 
     eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      // ignore initial connection ping
-      if (data.type === 'connected') return;
-
-      onNewCast(data);
-    };
+      const data = JSON.parse(event.data)
+      if (data.type === 'connected') return
+      onNewCastRef.current(data) // ← use ref, not closure
+    }
 
     eventSource.onerror = (error) => {
-      console.error('❌ SSE error:', error);
-      eventSource.close();
-      // attempt to reconnect after a delay
-      setTimeout(connect, 3000);
-    };
+      console.error('❌ SSE error:', error)
+      eventSource.close()
+      setTimeout(connect, 3000)
+    }
 
-    return eventSource;
-  }, [onNewCast]);
+    return eventSource
+  }, []) // ← no deps, connect never recreates
 
   useEffect(() => {
-    const eventSource = connect();
-
-    // cleanup on unmount
+    const eventSource = connect()
     return () => {
       console.log('🔌 SSE disconnected')
-      eventSource?.close();
+      eventSource?.close()
     }
-  }, [connect]);
+  }, [connect])
 }

@@ -1,44 +1,30 @@
-import { useEffect, useRef, useState } from 'react'
-import cloud from 'd3-cloud'
+import { useRef, useState, useEffect } from 'react'
 
-export function useWordCloud(casts, width, height) {
+
+export function useWordCloud(casts) {
   const [words, setWords] = useState([])
-  const simulationRef = useRef(null)
+  const seenIds = useRef(new Set())
 
   useEffect(() => {
     if (!casts || casts.length === 0) return
 
-    if (simulationRef.current) {
-      simulationRef.current.stop()
-    }
-
-    const wordEntries = casts.map(cast => ({
-      text: cast.text,
-      id: cast.id,
-      isNew: cast.isNew || false,  // ← preserve isNew
-      size: 14 + Math.random() * 28,
-    }))
-
-    const layout = cloud()
-      .size([width, height])
-      .words(wordEntries)
-      .padding(10)
-      .rotate(() => 0)
-      .font('Impact')
-      .fontSize(d => d.size)
-      .on('end', (computed) => {
-        setWords(computed)
+    const newWords = casts
+      .filter((cast) => !seenIds.current.has(cast.id))
+      .map((cast) => {
+        seenIds.current.add(cast.id)
+        return {
+          id: cast.id,
+          text: cast.text,
+          isNew: cast.isNew || false,
+          size: 14 + Math.random() * 28,
+          rotate: 0,
+        }
       })
 
-    layout.start()
-    simulationRef.current = layout
+    if (newWords.length === 0) return
 
-    return () => {
-      if (simulationRef.current) {
-        simulationRef.current.stop()
-      }
-    }
-  }, [casts, width, height])
+    setWords((prev) => [...prev, ...newWords])
+  }, [casts])
 
   return words
 }

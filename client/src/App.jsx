@@ -31,7 +31,7 @@ export default function App() {
       return [{ ...newCast, isNew: true }, ...prev]
     })
   }, [])
-
+  
   useSSE(handleNewCast)
 
   if (loading) {
