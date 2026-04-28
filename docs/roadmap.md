@@ -3,7 +3,7 @@
 ### 🔴 **LAUNCH BLOCK (Must Have)**
   #### Visuals
   - [X] Movements as a function of time
-  - [ ] Set focus to Input
+  - [X] Set focus to Input
   #### Formatting
   - [X] Remove obsolete drift variables from `.env`
   - [ ] Consolidate deterministic functions
