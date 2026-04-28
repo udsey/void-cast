@@ -25,7 +25,5 @@ Act with care. Leave no harm.
 
 ---
 
-## Credits
-
 Built by [udsey](https://github.com/udsey/)
 

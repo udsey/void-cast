@@ -1,6 +1,5 @@
-const WORLD_SIZE = 1000 // move to .env
-const WORLD_SCALE = 10 // move to .env
-
+const EXPLORE_RADIUS = 5000; // Radius for random position generation
+const OFFSET = 1000000
 
 const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const BASE = BASE62.length
@@ -28,35 +27,34 @@ function fromBase62(str) {
 
 // Encode position to short URL hash
 export function encodePosition(x, y) {
-  const xScaled = Math.round((x + WORLD_SIZE) * WORLD_SCALE)
-  const yScaled = Math.round((y + WORLD_SIZE) * WORLD_SCALE)
-
-  const combined = (xScaled << 20) | yScaled
-  return toBase62(combined)
+  const xScaled = Math.round((x) + OFFSET)
+  const yScaled = Math.round((y) + OFFSET)
+  return `${toBase62(xScaled)}-${toBase62(yScaled)}`
 }
 
 // Decode position from URL hash
 export function decodePosition(encoded) {
-  const combined = fromBase62(encoded);
-  const yScaled = combined & 0xFFFFF; // Lower 20 bits
-  const xScaled = combined >> 20;      // Upper bits
-  
-  let x = (xScaled / WORLD_SCALE) - WORLD_SIZE;
-  let y = (yScaled / WORLD_SCALE) - WORLD_SIZE;
-
-  x = Math.max(-WORLD_SIZE, Math.min(WORLD_SIZE, x));
-  y = Math.max(-WORLD_SIZE, Math.min(WORLD_SIZE, y));
-  
+  const [xEncoded, yEncoded] = encoded.split('-')
+  console.log('Decoding position - xEncoded:', xEncoded, 'yEncoded:', yEncoded)  // ← Log encoded values
+  const x = fromBase62(xEncoded) - OFFSET
+  const y = fromBase62(yEncoded) - OFFSET
+  console.log('Decoded position - x:', x, 'y:', y)  // ← Log decoded values
   return { x, y };
 }
 
 
 // Decode URL hash back to position
-export function generateRandomPosition(min = -WORLD_SIZE, max = WORLD_SIZE) {
+export function generateRandomPosition() {
   return {
-    x: Math.random() * (max - min) + min,
-    y: Math.random() * (max - min) + min,
+    x: Math.random() * EXPLORE_RADIUS * 2 - EXPLORE_RADIUS,
+    y: Math.random() * EXPLORE_RADIUS * 2 - EXPLORE_RADIUS,
   }
 }
 
-export const WORLD_BOUNDS = { min: -WORLD_SIZE, max: WORLD_SIZE };
+
+export function isValidPosition(x, y) {
+  return (
+    x >= -EXPLORE_RADIUS && x <= EXPLORE_RADIUS &&
+    y >= -EXPLORE_RADIUS && y <= EXPLORE_RADIUS
+  )
+}

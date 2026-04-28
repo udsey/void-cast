@@ -9,9 +9,9 @@
   - [ ] Database auto-cleanup (keep last 5000 casts)
   - [ ] In-memory queue for database writes (batch inserts, burst protection)
   #### Functionality
-  - [ ] Share link button with copy to clipboard (captures current view position, updates URL, copies /c/hash)
-  - [ ] Update position button (to move to random place)
-  - [ ] Donate button (instead of github)
+  - [X] Share link button with copy to clipboard (captures current view position, updates URL, copies /c/hash)
+  - [X] Update position button (to move to random place)
+  - [X] Support button
   #### Sequrity
   - [ ] Basic rate limiting (per IP, 10 casts/minute)
   - [ ] Content disclaimer link in Nav (opens modal with content warning)
