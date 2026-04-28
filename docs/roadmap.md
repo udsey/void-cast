@@ -14,10 +14,10 @@
   - [X] Support button
   #### Sequrity
   - [ ] Basic rate limiting (per IP, 10 casts/minute)
-  - [ ] Content disclaimer link in Nav (opens modal with content warning)
+  - [X] Content disclaimer link in Nav (opens modal with content warning)
   - [ ] Close SSE on idle connection (page visibility API + user inactivity)
   #### Polish
-  - [ ] Basic mobile responsive layout
+  - [X] Basic mobile responsive layout
   - [X] ABOUT.md content (philosophy, rules, credits, disclaimer)
 
 ---
@@ -44,12 +44,6 @@
 - [ ] Fading messages — older messages gradually fade out (age-based opacity)
 - [ ] Optional name/signature — user can attach name to cast (optional field)
 - [ ] Optional color picker — user chooses text color for their casts (overrides default white)
-
----
-
-### 🔵 **NICE TO HAVE BLOCK**
-- [ ] Sound effects (subtle, optional)
-- [ ] Keyboard shortcuts — Enter to post, Esc to clear input, arrow keys to pan
 
 
 ---
