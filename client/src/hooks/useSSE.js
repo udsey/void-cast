@@ -3,64 +3,67 @@ import { api } from '../services/api.js'
 
 export function useSSE(onNewCast) {
   const onNewCastRef = useRef(onNewCast)
+  const eventSourceRef = useRef(null)
+  const reconnectTimer = useRef(null)
 
-  // keep ref up to date without triggering reconnect
   useEffect(() => {
     onNewCastRef.current = onNewCast
   }, [onNewCast])
 
-  const connect = useCallback(() => {
-    const eventSource = new EventSource(api.getSSEUrl())
+  const disconnect = useCallback(() => {
+    clearTimeout(reconnectTimer.current)
+    eventSourceRef.current?.close()
+    eventSourceRef.current = null
+  }, [])
 
-    eventSource.onopen = () => {
-      console.log('✅ SSE connected')
-    }
+  const connect = useCallback(() => {
+    disconnect()
+    if (document.hidden) return
+
+    const eventSource = new EventSource(api.getSSEUrl())
+    eventSourceRef.current = eventSource
+
+    eventSource.onopen = () => console.log('✅ SSE connected')
 
     eventSource.onmessage = (event) => {
       try {
-        // Skip empty messages
-        if (!event.data || event.data.trim() === '') {
-          console.warn('Empty SSE message received')
-          return
-        }
-        
-        console.log('Raw SSE data:', event.data)
-        
+        if (!event.data || event.data.trim() === '') return
         const data = JSON.parse(event.data)
-        
-        if (data.type === 'connected') {
-          console.log('SSE handshake complete')
-          return
-        }
-        
-        // Handle new cast
+        if (data.type === 'connected') return
         if (data.id && data.text) {
-          console.log('New cast received via SSE:', data.id)
           onNewCastRef.current({ ...data, isNew: true })
         }
       } catch (err) {
         console.error('Failed to parse SSE message:', err)
-        console.error('Raw data that failed:', event.data)
       }
     }
 
-    eventSource.onerror = (error) => {
-      console.error('❌ SSE error:', error)
-      if (eventSource.readyState === EventSource.CLOSED) {
+    eventSource.onerror = () => {
+      disconnect()
+      if (!document.hidden) {
         console.log('Reconnecting SSE in 3 seconds...')
-        eventSource.close()
-        setTimeout(connect, 3000)
+        reconnectTimer.current = setTimeout(connect, 3000)
       }
     }
-
-    return eventSource
-  }, [])
+  }, [disconnect])
 
   useEffect(() => {
-    const eventSource = connect()
-    return () => {
-      console.log('🔌 SSE disconnected')
-      eventSource?.close()
+    connect()
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        disconnect()
+        console.log('🔌 SSE closed (tab hidden)')
+      } else {
+        connect()
+        console.log('✅ SSE reconnected (tab visible)')
+      }
     }
-  }, [connect])
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      disconnect()
+    }
+  }, [connect, disconnect])
 }
