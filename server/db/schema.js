@@ -1,4 +1,6 @@
+import { sql } from 'drizzle-orm';
 import { pgTable, serial, text, timestamp, real, integer, index } from 'drizzle-orm/pg-core';
+
 
 export const casts = pgTable('casts', {
   id: serial('id').primaryKey(),

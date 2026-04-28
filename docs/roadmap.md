@@ -2,13 +2,14 @@
 
 ### 🔴 **LAUNCH BLOCK (Must Have)**
   #### Visuals
-  - [ ] Movements as a function of time
+  - [X] Movements as a function of time
+  - [ ] Set focus to Input
   #### Formatting
   - [X] Remove obsolete drift variables from `.env`
   - [ ] Consolidate deterministic functions
   #### Database
   - [X] Database index optimization `(createdAt)`
-  - [ ] Database auto-cleanup (keep last 5000 casts)
+  - [X] Database auto-cleanup
   - [ ] In-memory queue for database writes (batch inserts, burst protection)
   #### Functionality
   - [X] Share link button with copy to clipboard (captures current view position, updates URL, copies /c/hash)

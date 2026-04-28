@@ -1,15 +1,27 @@
 services:
   postgres:
-    image: postgres:16
+    image: cleisonfmelo/postgres-pg-cron:latest
     container_name: void_cast_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+      POSTGRES_URL: postgresql://${DB_USER}:${DB_PASSWORD}@localhost:5432/${DB_NAME}
     ports:
       - "5435:${DB_PORT}"
+
+    command: >
+      sh -c "
+        docker-entrypoint.sh postgres -c shared_preload_libraries=pg_cron &
+        sleep 5 &&
+        psql $${POSTGRES_URL} -f /migrations/0006_cleanup_function.sql &&
+        wait
+      "
     volumes:
       - void_cast_db_data:/var/lib/postgresql/data
+      - ./server/db/migrations:/migrations
+
 volumes:
   void_cast_db_data:
+
