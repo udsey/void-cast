@@ -16,8 +16,6 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_FONT_SIZE_VARIANCE': JSON.stringify(env.VITE_FONT_SIZE_VARIANCE),
       'import.meta.env.VITE_INITIAL_ZOOM': JSON.stringify(env.VITE_INITIAL_ZOOM),
       'import.meta.env.VITE_INPUT_PLACEHOLDER': JSON.stringify(env.VITE_INPUT_PLACEHOLDER),
-      'import.meta.env.VITE_BUTTON_TEXT': JSON.stringify(env.VITE_BUTTON_TEXT),
-      'import.meta.env.VITE_BUTTON_TEXT_OVER_LIMIT': JSON.stringify(env.VITE_BUTTON_TEXT_OVER_LIMIT),
       },
     server: {
       proxy: {

@@ -2,12 +2,12 @@ import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 
 import { Modal } from './Modal.jsx'
-import supportContent from '../content/support.md?raw'
+import termsContent from '../content/terms.md?raw'
 
-export function SupportModal({ isOpen, onClose }) {
+export function TermsModal({ isOpen, onClose }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-    <ReactMarkdown rehypePlugins={[[rehypeRaw]]}>{supportContent}</ReactMarkdown>
+    <ReactMarkdown rehypePlugins={[[rehypeRaw]]}>{termsContent}</ReactMarkdown>
     </Modal>
   )
 }

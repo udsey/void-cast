@@ -1,5 +1,3 @@
-import { color } from "d3"
-
 export const modalBackdropStyle = {
   position: 'fixed',
   inset: 0,
@@ -18,7 +16,9 @@ export const modalContainerStyle = {
   border: '1px solid rgba(255,255,255,0.08)',
   borderRadius: '12px',
   padding: '2.5rem',
-  width: '480px',
+  width: '70vw',
+  maxHeight: '70vh',
+  height: 'auto',
   maxWidth: '90vw',
   maxHeight: '80vh',
   overflowY: 'auto',

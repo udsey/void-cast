@@ -3,8 +3,8 @@ import { casts } from '../db/schema.js'
 import { desc, eq } from 'drizzle-orm'
 
 // At the top of routes/casts.js, add these with proper fallbacks
-const MAX_LINE_LENGTH = parseInt(process.env.MAX_LINE_LENGTH) 
-const MAX_LINES = parseInt(process.env.MAX_LINES) 
+const VITE_MAX_LINE_LENGTH = parseInt(process.env.VITE_MAX_LINE_LENGTH) 
+const VITE_MAX_LINES = parseInt(process.env.VITE_MAX_LINES) 
 
 // World bounds from env (with fallbacks)
 const WORLD_SIZE = parseFloat(process.env.WORLD_SIZE) 
@@ -18,8 +18,8 @@ const DRIFT_SPEED_MAX = parseFloat(process.env.DRIFT_SPEED_MAX) || 25
 
 const splitIntoLines = (text) => {
   const normalized = text.trim().replace(/\S+/g, (word) => {
-    if (word.length <= MAX_LINE_LENGTH) return word
-    return word.match(new RegExp(`.{1,${MAX_LINE_LENGTH}}`, 'g')).join(' ')
+    if (word.length <= VITE_MAX_LINE_LENGTH) return word
+    return word.match(new RegExp(`.{1,${VITE_MAX_LINE_LENGTH}}`, 'g')).join(' ')
   })
 
   const words = normalized.split(' ')
@@ -27,7 +27,7 @@ const splitIntoLines = (text) => {
   let current = ''
 
   for (const word of words) {
-    if (current.length + word.length + 1 <= MAX_LINE_LENGTH) {
+    if (current.length + word.length + 1 <= VITE_MAX_LINE_LENGTH) {
       current = current ? `${current} ${word}` : word
     } else {
       if (current) lines.push(current)
@@ -93,9 +93,9 @@ export async function castsRoute(app) {
     }
 
     const lines = splitIntoLines(text)
-    if (lines.length > MAX_LINES) {
+    if (lines.length > VITE_MAX_LINES) {
       return reply.status(400).send({
-        error: `Too long — max ${MAX_LINES} lines of ${MAX_LINE_LENGTH} chars each`
+        error: `Too long — max ${VITE_MAX_LINES} lines of ${VITE_MAX_LINE_LENGTH} chars each`
       })
     }
 

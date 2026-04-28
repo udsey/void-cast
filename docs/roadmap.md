@@ -18,7 +18,7 @@
   - [ ] Close SSE on idle connection (page visibility API + user inactivity)
   #### Polish
   - [ ] Basic mobile responsive layout
-  - [ ] ABOUT.md content (philosophy, rules, credits, disclaimer)
+  - [X] ABOUT.md content (philosophy, rules, credits, disclaimer)
 
 ---
 
