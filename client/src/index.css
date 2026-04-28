@@ -122,6 +122,10 @@ code {
   background: var(--code-bg);
 }
 
+.modal-content {
+  text-align: left;
+}
+
 .modal-content h1,
 .modal-content h2,
 .modal-content h3 {

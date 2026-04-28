@@ -5,7 +5,6 @@ import { useSSE } from './hooks/useSSE.js'
 import { api } from './services/api.js'
 import { Nav } from './components/Nav.jsx'
 import { encodePosition, decodePosition, generateRandomPosition, isValidPosition } from './utils/coordinates.js'
-import { CoordinateControls } from './components/CoordinateControls.jsx'
 import { screenStyle } from './styles/screen.js'
 
 export default function App() {
@@ -132,8 +131,7 @@ export default function App() {
         onViewChange={setCurrentViewPosition}  // ← PASS THIS
       />
       <Nav />
-      <CoordinateControls currentViewPosition={currentViewPosition} />
-      <div style={{ position: 'relative', zIndex: 100, pointerEvents: 'auto' }}>
+      <div style={{zIndex: 100, pointerEvents: 'auto' }}>
         <VoidInput currentViewPosition={currentViewPosition} />
       </div>
     </div>

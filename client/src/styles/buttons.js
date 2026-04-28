@@ -1,14 +1,18 @@
-export const buttonStyle = {
+export const getButtonStyle = (isMobile, isTablet) => ({
   background: 'rgba(255,255,255,0.08)',
   border: '1px solid rgba(255,255,255,0.15)',
   borderRadius: '8px',
   color: '#fff',
-  padding: '0.75rem 1.5rem',
   fontSize: '1rem',
   cursor: 'pointer',
   backdropFilter: 'blur(10px)',
   transition: 'all 0.3s ease',
-}
+  width: isMobile ? '36px' : isTablet ? '44px' : '52px',
+  height:'52px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+})
 
 export const CloseButtonStyle = {
   position: 'absolute',

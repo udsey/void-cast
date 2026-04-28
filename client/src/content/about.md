@@ -24,6 +24,5 @@ It belongs to them — not to the void, nor to its creator.
 Act with care. Leave no harm.
 
 ---
-
-Built by [udsey](https://github.com/udsey/)
+<p style="text-align: center"><em>Built by <a href="https://github.com/udsey/">udsey</a></em></p>
 
