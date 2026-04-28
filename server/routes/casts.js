@@ -59,7 +59,6 @@ function generateDeterministicProperties(castId, text) {
   const rng = seededRandom(Math.abs(seed))
   
     return {
-    rotation: 0,
     fontSize: BASE_FONT_SIZE + (rng() - 0.5) * FONT_SIZE_VARIANCE,
     driftDirection: rng() * Math.PI * 2,
     driftSpeed: DRIFT_SPEED_MIN + rng() * (DRIFT_SPEED_MAX - DRIFT_SPEED_MIN),
@@ -118,7 +117,6 @@ export async function castsRoute(app) {
           text: formatted,
           x: x || 0,  // ← USE USER'S X POSITION (from view center)
           y: y || 0,  // ← USE USER'S Y POSITION (from view center)
-          rotation: props.rotation,
           fontSize: props.fontSize,
           driftDirection: props.driftDirection || 0,
           driftSpeed: props.driftSpeed || 10,

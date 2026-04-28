@@ -8,7 +8,6 @@ export const casts = pgTable('casts', {
   // Allow NULL initially
   x: real('x'),
   y: real('y'),
-  rotation: integer('rotation'),
   fontSize: real('font_size'),
   driftDirection: real('drift_direction'),
   driftSpeed: real('drift_speed'),

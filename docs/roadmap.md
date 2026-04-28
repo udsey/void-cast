@@ -17,7 +17,8 @@
   #### Sequrity
   - [X] Basic rate limiting (per IP, 10 casts/minute)
   - [X] Content disclaimer link in Nav (opens modal with content warning)
-  - [ ] Close SSE on idle connection (page visibility API + user inactivity)
+  - [X] Close SSE on idle connection: page invisibility API
+  - [X] Close SSE on idle connection: user inactivity
   #### Polish
   - [X] Basic mobile responsive layout
   - [X] ABOUT.md content (philosophy, rules, credits, disclaimer)

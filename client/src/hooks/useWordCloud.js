@@ -12,30 +12,18 @@ export function useWordCloud(casts) {
       .map((cast) => {
         seenIds.current.add(cast.id)
         
-        // Use the deterministic properties from the database
-        // If properties don't exist (old data), generate deterministic ones client-side
+
         return {
-          id: cast.id,
-          text: cast.text,
-          isNew: cast.isNew || false,
-          
-          // Position from database
-          x: cast.x || 0,
-          y: cast.y || 0,
-          
-          // Visual properties
-          rotation: cast.rotation || 0,
-          fontSize: cast.fontSize || 24,
-          
-          // Drift pattern from database
-            driftDirection: cast.driftDirection || 0,
-            driftSpeed: cast.driftSpeed || 5,
-            driftStartX: cast.x,  // Store starting position
-            driftStartY: cast.y,
-          
-          // For animation tracking
-          driftStartTime: Date.now()
-        }
+            id: cast.id,
+            text: cast.text, 
+            isNew: cast.isNew,
+            x: cast.x,
+            y: cast.y,
+            fontSize: cast.fontSize,
+            driftDirection: cast.driftDirection,
+            driftSpeed: cast.driftSpeed,
+            createdAt: cast.createdAt
+}
       })
 
     if (newWords.length === 0) return
