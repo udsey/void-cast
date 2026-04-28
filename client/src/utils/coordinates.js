@@ -1,5 +1,5 @@
-const WORLD_SIZE = 1000
-const WORLD_SCALE = 1
+const WORLD_SIZE = 1000 // move to .env
+const WORLD_SCALE = 10 // move to .env
 
 
 const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
