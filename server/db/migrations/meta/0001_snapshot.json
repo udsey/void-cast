@@ -1,0 +1,111 @@
+{
+  "id": "a181851b-8116-4954-9c18-cdd810c7fa96",
+  "prevId": "043f405d-acb8-40c3-b95c-dbecde17124a",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.casts": {
+      "name": "casts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "x": {
+          "name": "x",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "y": {
+          "name": "y",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rotation": {
+          "name": "rotation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "font_size": {
+          "name": "font_size",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drift_amplitude_x": {
+          "name": "drift_amplitude_x",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drift_amplitude_y": {
+          "name": "drift_amplitude_y",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drift_frequency_x": {
+          "name": "drift_frequency_x",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drift_frequency_y": {
+          "name": "drift_frequency_y",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drift_phase_x": {
+          "name": "drift_phase_x",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drift_phase_y": {
+          "name": "drift_phase_y",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

@@ -1,0 +1,1 @@
+ALTER TABLE "casts" DROP COLUMN "rotation";
