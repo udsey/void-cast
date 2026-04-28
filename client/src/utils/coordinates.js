@@ -35,10 +35,8 @@ export function encodePosition(x, y) {
 // Decode position from URL hash
 export function decodePosition(encoded) {
   const [xEncoded, yEncoded] = encoded.split('-')
-  console.log('Decoding position - xEncoded:', xEncoded, 'yEncoded:', yEncoded)  // ← Log encoded values
   const x = fromBase62(xEncoded) - OFFSET
   const y = fromBase62(yEncoded) - OFFSET
-  console.log('Decoded position - x:', x, 'y:', y)  // ← Log decoded values
   return { x, y };
 }
 

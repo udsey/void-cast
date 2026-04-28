@@ -1,13 +1,11 @@
 export const api = {
   getCasts: async () => {
-    console.log('Fetching casts...')
     const response = await fetch('/api/casts')
     if (!response.ok) throw new Error('Failed to fetch casts')
     return response.json()
   },
 
   createCast: async (text, viewPosition) => {
-    console.log('API: Creating cast with text:', text, 'at position:', viewPosition)
     
     const response = await fetch('/api/cast', {
       method: 'POST',
@@ -20,8 +18,9 @@ export const api = {
     })
     
     if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Failed to create cast: ${error}`)
+      const err = new Error('Failed to create cast')
+      err.status = response.status
+      throw err
     }
     
     return response.json()

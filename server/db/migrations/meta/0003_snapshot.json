@@ -1,0 +1,87 @@
+{
+  "id": "069c2b35-6970-49a0-8e88-15862fa7f002",
+  "prevId": "18c0a731-a322-4ea4-9164-37a7a3537152",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.casts": {
+      "name": "casts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "x": {
+          "name": "x",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "y": {
+          "name": "y",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rotation": {
+          "name": "rotation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "font_size": {
+          "name": "font_size",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "drift_direction": {
+          "name": "drift_direction",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "drift_speed": {
+          "name": "drift_speed",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

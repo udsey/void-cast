@@ -1,6 +1,6 @@
 import { db } from '../db/index.js'
 import { casts } from '../db/schema.js'
-import { desc, eq } from 'drizzle-orm'
+import { desc, eq, max } from 'drizzle-orm'
 
 // At the top of routes/casts.js, add these with proper fallbacks
 const VITE_MAX_LINE_LENGTH = parseInt(process.env.VITE_MAX_LINE_LENGTH) 
@@ -13,8 +13,8 @@ const FONT_SIZE_VARIANCE = parseFloat(process.env.FONT_SIZE_VARIANCE)
 
 // Drift configuration (with fallbacks)
 // Directional drift configuration
-const DRIFT_SPEED_MIN = parseFloat(process.env.DRIFT_SPEED_MIN) || 5
-const DRIFT_SPEED_MAX = parseFloat(process.env.DRIFT_SPEED_MAX) || 25
+const DRIFT_SPEED_MIN = parseFloat(process.env.DRIFT_SPEED_MIN)
+const DRIFT_SPEED_MAX = parseFloat(process.env.DRIFT_SPEED_MAX) 
 
 const splitIntoLines = (text) => {
   const normalized = text.trim().replace(/\S+/g, (word) => {
@@ -59,7 +59,6 @@ function generateDeterministicProperties(castId, text) {
   const rng = seededRandom(Math.abs(seed))
   
     return {
-    rotation: 0,
     fontSize: BASE_FONT_SIZE + (rng() - 0.5) * FONT_SIZE_VARIANCE,
     driftDirection: rng() * Math.PI * 2,
     driftSpeed: DRIFT_SPEED_MIN + rng() * (DRIFT_SPEED_MAX - DRIFT_SPEED_MIN),
@@ -74,7 +73,6 @@ export async function castsRoute(app) {
         .select()
         .from(casts)
         .orderBy(desc(casts.createdAt))
-        .limit(parseInt(process.env.CASTS_LIMIT) || 200)
       return reply.send(allCasts)
     } catch (err) {
       console.error('Fetch error:', err)
@@ -83,7 +81,14 @@ export async function castsRoute(app) {
   })
 
   // POST /api/cast
-  app.post('/cast', async (request, reply) => {
+  app.post('/cast', {
+    config: {
+      rateLimit: {
+        max: parseInt(process.env.RATE_LIMIT_PER_IP),
+        timeWindow: '1 minute'}
+      }
+    }, async (request, reply) => {
+
     const { text, x, y } = request.body  // ← GET x, y from request
 
     console.log('📝 Received cast:', { text: text?.substring(0, 50), x, y })
@@ -112,14 +117,11 @@ export async function castsRoute(app) {
           text: formatted,
           x: x || 0,  // ← USE USER'S X POSITION (from view center)
           y: y || 0,  // ← USE USER'S Y POSITION (from view center)
-          rotation: props.rotation,
           fontSize: props.fontSize,
           driftDirection: props.driftDirection || 0,
           driftSpeed: props.driftSpeed || 10,
         })
         .returning()
-
-      console.log('✅ Cast created at user position:', { x: x || 0, y: y || 0, id: newCast.id })
       
       // Broadcast to SSE clients
       app.sse.broadcast(newCast)

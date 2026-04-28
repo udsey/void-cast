@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import * as d3 from 'd3'
 import { useWordCloud } from '../hooks/useWordCloud.js'
+import { getPositionAtTime } from '../utils/movement.js'
 
 // ── tuneable variables ──────────────────────────────
 const SHRINK_DURATION    = parseInt(import.meta.env.VITE_SHRINK_DURATION)
 const NEW_CAST_SIZE_MULT = parseFloat(import.meta.env.VITE_NEW_CAST_SIZE_MULT)
-const BASE_FONT_SIZE     = parseInt(import.meta.env.VITE_BASE_FONT_SIZE)
-const FONT_SIZE_VARIANCE = parseInt(import.meta.env.VITE_FONT_SIZE_VARIANCE)
 const INITIAL_ZOOM       = parseFloat(import.meta.env.VITE_INITIAL_ZOOM)
 // ────────────────────────────────────────────────────
 
@@ -23,20 +22,12 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← AD
   // Get current view center in world coordinates
   const getCurrentViewCenter = useCallback(() => {
     if (!svgRef.current) return { x: 0, y: 0 }
-
-    const s_height = svgRef.current.height.baseVal.value
-    const s_width = svgRef.current.width.baseVal.value
-
-    console.log('svgRef.current:', s_height, s_width)  // ← Log svgRef
     
     const transform = d3.zoomTransform(svgRef.current)
     const width = dimensions.width
     const height = dimensions.height
-    console.log('Current transform:', transform)  // ← Log current transform
-    console.log('Dimensions:', dimensions)  // ← Log dimensions
     const centerX = (width / 2 - transform.x) / transform.k
     const centerY = (height / 2 - transform.y) / transform.k
-    console.log('Calculated center:', { x: centerX, y: centerY })  // ← Log calculated center
     
     return { x: centerX, y: centerY }
   }, [dimensions])
@@ -55,8 +46,6 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← AD
     if (!svgRef.current) return
     const svg = d3.select(svgRef.current)
     const g = svg.select('g.cloud-group')
-    console.log('Setting up zoom - initialPosition:', initialPosition)  // ← Log initial position
-
     let initialTransform
     
     if (initialPosition) {
@@ -96,7 +85,7 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← AD
   // Clean up animations on unmount
   useEffect(() => {
     return () => {
-      animationRefs.current.forEach((id, element) => {
+      animationRefs.current.forEach((id) => {
         if (id) cancelAnimationFrame(id)
       })
       animationRefs.current.clear()
@@ -104,31 +93,28 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← AD
   }, [])
 
 
-    // Smooth random walk using sine waves with different phases
-// Replace the startDrift function
-const startDrift = useCallback((element, word) => {
-  if (animationRefs.current.has(element)) {
-    cancelAnimationFrame(animationRefs.current.get(element))
-  }
-  
-  const startTime = performance.now() / 1000
-  
-  const animate = () => {
-    const now = performance.now() / 1000
-    const dt = now - startTime
+  const startDrift = useCallback((element, word) => {
+    if (animationRefs.current.has(element)) {
+      cancelAnimationFrame(animationRefs.current.get(element))
+    }
     
-    // Linear movement in direction
-    const currentX = word.driftStartX + (dt * word.driftSpeed * Math.cos(word.driftDirection))
-    const currentY = word.driftStartY + (dt * word.driftSpeed * Math.sin(word.driftDirection))
+    const animate = () => {
+
+      const { x, y } = getPositionAtTime(word)
+      element.attr('transform', `translate(${x},${y})`)
+      
+      const frameId = requestAnimationFrame(animate)
+      animationRefs.current.set(element, frameId)
+
+    }
     
-    element.attr('transform', `translate(${currentX},${currentY})`)
-    
-    const frameId = requestAnimationFrame(animate)
-    animationRefs.current.set(element, frameId)
-  }
-  
-  animate()
+    animate()
 }, [])
+
+
+
+
+
 
   // render and animate words
   useEffect(() => {
@@ -142,7 +128,7 @@ const startDrift = useCallback((element, word) => {
       .data(words, (d) => d.id)
 
     // Stop animations for exiting elements
-    text.exit().each(function(d) {
+    text.exit().each(function() {
       const el = d3.select(this)
       if (animationRefs.current.has(el.node())) {
         cancelAnimationFrame(animationRefs.current.get(el.node()))
@@ -191,12 +177,10 @@ const startDrift = useCallback((element, word) => {
             .text(line)
         })
         
-        // Store drift start time for consistent animation
-        d.driftStartTime = performance.now() / 1000
 
         el
           .attr('font-size', `${finalSize * NEW_CAST_SIZE_MULT}px`)
-          .attr('transform', `translate(${d.x},${d.y})rotate(${d.rotation})`)
+          .attr('transform', `translate(${d.x},${d.y})`)
           .attr('opacity', 0)
           .transition()
           .duration(400)
@@ -205,7 +189,7 @@ const startDrift = useCallback((element, word) => {
           .duration(SHRINK_DURATION)
           .ease(d3.easeCubicOut)
           .attr('font-size', `${finalSize}px`)
-          .on('end', function() {
+          .on('start', () => {
             startDrift(el, d)
           })
       })

@@ -1,21 +1,25 @@
 ## 🚀 void-cast --- Implementation Roadmap
 
 ### 🔴 **LAUNCH BLOCK (Must Have)**
+  #### Visuals
+  - [X] Movements as a function of time
+  - [X] Set focus to Input
   #### Formatting
-  - [ ] Remove obsolete drift variables from `.env`
+  - [X] Remove obsolete drift variables from `.env`
   - [ ] Consolidate deterministic functions
   #### Database
-  - [ ] Database index optimization `(createdAt)`
-  - [ ] Database auto-cleanup (keep last 5000 casts)
+  - [X] Database index optimization `(createdAt)`
+  - [X] Database auto-cleanup
   - [ ] In-memory queue for database writes (batch inserts, burst protection)
   #### Functionality
   - [X] Share link button with copy to clipboard (captures current view position, updates URL, copies /c/hash)
   - [X] Update position button (to move to random place)
   - [X] Support button
   #### Sequrity
-  - [ ] Basic rate limiting (per IP, 10 casts/minute)
+  - [X] Basic rate limiting (per IP, 10 casts/minute)
   - [X] Content disclaimer link in Nav (opens modal with content warning)
-  - [ ] Close SSE on idle connection (page visibility API + user inactivity)
+  - [X] Close SSE on idle connection: page invisibility API
+  - [X] Close SSE on idle connection: user inactivity
   #### Polish
   - [X] Basic mobile responsive layout
   - [X] ABOUT.md content (philosophy, rules, credits, disclaimer)
@@ -46,6 +50,4 @@
 - [ ] Optional color picker — user chooses text color for their casts (overrides default white)
 
 
----
 
-**Which block do you want to start with?**

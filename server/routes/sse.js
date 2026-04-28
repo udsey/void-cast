@@ -23,9 +23,9 @@ async function sseRoute(app) {
 
     request.raw.on('close', () => {
       clients.delete(reply.raw)
-      console.log('Client disconnected, total clients:', clients.size)
+      console.log('🔴 Client disconnected, total clients:', clients.size)
     })
-    console.log('Client connected, total clients:', clients.size)
+    console.log('🟢 Client connected, total clients:', clients.size)
   })
 }
 

@@ -27,37 +27,32 @@ export default function App() {
   // Handle coordinate parsing and redirection
   useEffect(() => {
     const path = window.location.pathname
-
-    console.log('pathname:', path)
-    console.log('match:', path.match(/^\/([A-Za-z0-9-]+)$/))
-  
     
     // Check if we're at /[encoded]
     const match = path.match(/^\/([A-Za-z0-9-]+)$/)
     
     if (match) {
-      // Valid coordinate URL - decode it
       try {
         const pos = decodePosition(match[1])
         if (isValidPosition(pos.x, pos.y)) {
-          setInitialPosition(pos)
+          setTimeout(() => setInitialPosition(pos), 0)
         } else {
           console.error('Decoded coordinates are out of bounds, redirecting to random...', pos)
-          redirectToRandomPosition()
+          setTimeout(() => redirectToRandomPosition(), 0)
         }
         
       } catch (err) {
         console.error('Invalid coordinates, redirecting to random...', err)
-        redirectToRandomPosition()
+        setTimeout(() => redirectToRandomPosition(), 0)
       }
     } else if (path === '/' || path === '') {
       // Root path - set initial position to center (0,0)
-      setInitialPosition({ x: 0, y: 0 })
+      setTimeout(() => setInitialPosition({ x: 0, y: 0 }), 0)
     } else {
       // Unknown path - redirect to random
-      redirectToRandomPosition()
+      setTimeout(() => redirectToRandomPosition(), 0)
     }
-  }, [])
+  }, [redirectToRandomPosition])
 
 
 
@@ -84,7 +79,7 @@ export default function App() {
   const handleNewCast = useCallback((newCast) => {
     setCasts((prev) => {
       if (prev.find((c) => c.id === newCast.id)) return prev
-      return [{ ...newCast, isNew: true }, ...prev]
+      return [{ ...newCast }, ...prev]
     })
   }, [])
   

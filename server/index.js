@@ -5,14 +5,25 @@ import { castsRoute } from './routes/casts.js'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import fs from 'fs/promises'
+import rateLimit from '@fastify/rate-limit'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const app = Fastify({ logger: true })
+const app = Fastify({ logger: true, trustProxy: true })
+
+await app.register(rateLimit, {
+  global: false,
+  max: parseInt(process.env.RATE_LIMIT_GLOBAL),
+  timeWindow: '1 minute',
+  errorResponseBuilder: (request, context) => ({
+    statusCode: 429,
+    error: 'Too many casts. Take a moment to enjoy the void.',
+  })
+})
 
 await app.register(cors, {
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: process.env.CLIENT_URL,
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
 })
@@ -30,7 +41,6 @@ app.decorate('sse', {
       }
       
       const message = `data: ${JSON.stringify(data)}\n\n`
-      console.log('Broadcasting to', clients.size, 'clients:', data.id || 'unknown')
       
       clients.forEach((client) => {
         try {
@@ -47,7 +57,6 @@ app.decorate('sse', {
 })
 
 app.get('/api/sse', (request, reply) => {
-  console.log('SSE connection requested')
   
   reply.raw.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -58,15 +67,14 @@ app.get('/api/sse', (request, reply) => {
 
   // Send initial connection message
   const initMessage = 'data: {"type":"connected"}\n\n'
-  console.log('Sending init message:', initMessage)
   reply.raw.write(initMessage)
   
   clients.add(reply.raw)
-  console.log('Client connected, total clients:', clients.size)
+  console.log('🟢 Client connected, total clients:', clients.size)
 
   request.raw.on('close', () => {
     clients.delete(reply.raw)
-    console.log('Client disconnected, total clients:', clients.size)
+    console.log('🔴 Client disconnected, total clients:', clients.size)
   })
 
   // keep connection open
@@ -108,7 +116,7 @@ if (process.env.NODE_ENV === 'production') {
 
 try {
   await app.listen({
-    port: parseInt(process.env.PORT) || 3000,
+    port: parseInt(process.env.PORT),
     host: '0.0.0.0'
   })
 } catch (err) {

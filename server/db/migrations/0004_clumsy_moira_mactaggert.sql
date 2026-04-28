@@ -1,0 +1,1 @@
+CREATE INDEX "casts_created_at_idx" ON "casts" USING btree ("created_at" DESC NULLS LAST);
