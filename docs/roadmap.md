@@ -2,7 +2,7 @@
 
 ### 🔴 **LAUNCH BLOCK (Must Have)**
   #### Formatting
-  - [ ] Remove obsolete drift variables from `.env`
+  - [X] Remove obsolete drift variables from `.env`
   - [ ] Consolidate deterministic functions
   #### Database
   - [X] Database index optimization `(createdAt)`
@@ -46,6 +46,4 @@
 - [ ] Optional color picker — user chooses text color for their casts (overrides default white)
 
 
----
 
-**Which block do you want to start with?**
