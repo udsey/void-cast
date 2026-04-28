@@ -11,7 +11,7 @@
   #### Functionality
   - [X] Share link button with copy to clipboard (captures current view position, updates URL, copies /c/hash)
   - [X] Update position button (to move to random place)
-  - [ ] Support button (instead of github)
+  - [X] Support button
   #### Sequrity
   - [ ] Basic rate limiting (per IP, 10 casts/minute)
   - [ ] Content disclaimer link in Nav (opens modal with content warning)
