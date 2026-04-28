@@ -13,8 +13,8 @@ const FONT_SIZE_VARIANCE = parseFloat(process.env.FONT_SIZE_VARIANCE)
 
 // Drift configuration (with fallbacks)
 // Directional drift configuration
-const DRIFT_SPEED_MIN = parseFloat(process.env.DRIFT_SPEED_MIN) || 5
-const DRIFT_SPEED_MAX = parseFloat(process.env.DRIFT_SPEED_MAX) || 25
+const DRIFT_SPEED_MIN = parseFloat(process.env.DRIFT_SPEED_MIN)
+const DRIFT_SPEED_MAX = parseFloat(process.env.DRIFT_SPEED_MAX) 
 
 const splitIntoLines = (text) => {
   const normalized = text.trim().replace(/\S+/g, (word) => {
@@ -74,7 +74,6 @@ export async function castsRoute(app) {
         .select()
         .from(casts)
         .orderBy(desc(casts.createdAt))
-        .limit(parseInt(process.env.CASTS_LIMIT) || 200)
       return reply.send(allCasts)
     } catch (err) {
       console.error('Fetch error:', err)

@@ -149,3 +149,5 @@ node_modules/
 
 # Drizzle ORM migrations
 server/db/migrations/
+
+CheatSheet.md

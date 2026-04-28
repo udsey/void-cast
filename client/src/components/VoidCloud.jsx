@@ -5,8 +5,6 @@ import { useWordCloud } from '../hooks/useWordCloud.js'
 // ── tuneable variables ──────────────────────────────
 const SHRINK_DURATION    = parseInt(import.meta.env.VITE_SHRINK_DURATION)
 const NEW_CAST_SIZE_MULT = parseFloat(import.meta.env.VITE_NEW_CAST_SIZE_MULT)
-const BASE_FONT_SIZE     = parseInt(import.meta.env.VITE_BASE_FONT_SIZE)
-const FONT_SIZE_VARIANCE = parseInt(import.meta.env.VITE_FONT_SIZE_VARIANCE)
 const INITIAL_ZOOM       = parseFloat(import.meta.env.VITE_INITIAL_ZOOM)
 // ────────────────────────────────────────────────────
 

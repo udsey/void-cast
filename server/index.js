@@ -23,7 +23,7 @@ await app.register(rateLimit, {
 })
 
 await app.register(cors, {
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: process.env.CLIENT_URL,
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
 })
@@ -119,7 +119,7 @@ if (process.env.NODE_ENV === 'production') {
 
 try {
   await app.listen({
-    port: parseInt(process.env.PORT) || 3000,
+    port: parseInt(process.env.PORT),
     host: '0.0.0.0'
   })
 } catch (err) {

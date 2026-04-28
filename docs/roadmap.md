@@ -5,7 +5,7 @@
   - [ ] Remove obsolete drift variables from `.env`
   - [ ] Consolidate deterministic functions
   #### Database
-  - [ ] Database index optimization `(createdAt)`
+  - [X] Database index optimization `(createdAt)`
   - [ ] Database auto-cleanup (keep last 5000 casts)
   - [ ] In-memory queue for database writes (batch inserts, burst protection)
   #### Functionality

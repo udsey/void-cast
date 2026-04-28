@@ -12,10 +12,9 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_MAX_LINES': JSON.stringify(env.VITE_MAX_LINES),
       'import.meta.env.VITE_SHRINK_DURATION': JSON.stringify(env.VITE_SHRINK_DURATION),
       'import.meta.env.VITE_NEW_CAST_SIZE_MULT': JSON.stringify(env.VITE_NEW_CAST_SIZE_MULT),
-      'import.meta.env.VITE_BASE_FONT_SIZE': JSON.stringify(env.VITE_BASE_FONT_SIZE),
-      'import.meta.env.VITE_FONT_SIZE_VARIANCE': JSON.stringify(env.VITE_FONT_SIZE_VARIANCE),
       'import.meta.env.VITE_INITIAL_ZOOM': JSON.stringify(env.VITE_INITIAL_ZOOM),
       'import.meta.env.VITE_INPUT_PLACEHOLDER': JSON.stringify(env.VITE_INPUT_PLACEHOLDER),
+      'import.meta.env.VITE_IDLE_TIMEOUT': JSON.stringify(env.VITE_IDLE_TIMEOUT),
       },
     server: {
       proxy: {
