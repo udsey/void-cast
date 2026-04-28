@@ -94,7 +94,7 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← AD
   // Clean up animations on unmount
   useEffect(() => {
     return () => {
-      animationRefs.current.forEach((id, element) => {
+      animationRefs.current.forEach((id) => {
         if (id) cancelAnimationFrame(id)
       })
       animationRefs.current.clear()
@@ -140,7 +140,7 @@ const startDrift = useCallback((element, word) => {
       .data(words, (d) => d.id)
 
     // Stop animations for exiting elements
-    text.exit().each(function(d) {
+    text.exit().each(function() {
       const el = d3.select(this)
       if (animationRefs.current.has(el.node())) {
         cancelAnimationFrame(animationRefs.current.get(el.node()))

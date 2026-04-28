@@ -1,26 +1,24 @@
 import { useEffect, useCallback, useRef } from 'react'
 import { api } from '../services/api.js'
 
-
 const IDLE_TIMEOUT = parseInt(import.meta.env.VITE_IDLE_TIMEOUT)
 
 export function useSSE(onNewCast) {
   const onNewCastRef = useRef(onNewCast)
   const eventSourceRef = useRef(null)
   const reconnectTimer = useRef(null)
+  const idleTimer = useRef(null)
 
   useEffect(() => {
     onNewCastRef.current = onNewCast
   }, [onNewCast])
-
-
-  const idleTimer = useRef(null)
 
   const disconnect = useCallback(() => {
     clearTimeout(reconnectTimer.current)
     eventSourceRef.current?.close()
     eventSourceRef.current = null
   }, [])
+  
 
   const connect = useCallback(() => {
     disconnect()
@@ -54,26 +52,25 @@ export function useSSE(onNewCast) {
   }, [disconnect])
 
   const resetIdleTimer = useCallback(() => {
-  clearTimeout(idleTimer.current)
-  if (eventSourceRef.current === null && !document.hidden) {
-    connect()
-  }
-  idleTimer.current = setTimeout(() => {
-    disconnect()
-    console.log('🔌 SSE closed (idle)')
-  }, IDLE_TIMEOUT)
-}, [connect, disconnect])
-
-useEffect(() => {
-  const events = ['mousemove', 'mousedown', 'keydown', 'touchstart']
-  events.forEach(e => window.addEventListener(e, resetIdleTimer))
-  resetIdleTimer()
-  return () => {
-    events.forEach(e => window.removeEventListener(e, resetIdleTimer))
     clearTimeout(idleTimer.current)
-  }
-}, [resetIdleTimer])
+    if (eventSourceRef.current === null && !document.hidden) {
+      connect()
+    }
+    idleTimer.current = setTimeout(() => {
+      disconnect()
+      console.log('🔌 SSE closed (idle)')
+    }, IDLE_TIMEOUT)
+  }, [connect, disconnect])
 
+  useEffect(() => {
+    const events = ['mousemove', 'mousedown', 'keydown', 'touchstart']
+    events.forEach(e => window.addEventListener(e, resetIdleTimer))
+    resetIdleTimer()
+    return () => {
+      events.forEach(e => window.removeEventListener(e, resetIdleTimer))
+      clearTimeout(idleTimer.current)
+    }
+  }, [resetIdleTimer])
 
   useEffect(() => {
     connect()

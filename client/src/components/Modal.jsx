@@ -1,4 +1,4 @@
-import { use, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { CloseButtonStyle } from '../styles/buttons.js'
 import { modalBackdropStyle, modalContainerStyle, modalContentStyle } from '../styles/modal.js'
 

@@ -17,7 +17,6 @@ export const modalContainerStyle = {
   borderRadius: '12px',
   padding: '2.5rem',
   width: '70vw',
-  maxHeight: '70vh',
   height: 'auto',
   maxWidth: '90vw',
   maxHeight: '80vh',

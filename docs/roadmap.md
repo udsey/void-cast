@@ -1,6 +1,8 @@
 ## 🚀 void-cast --- Implementation Roadmap
 
 ### 🔴 **LAUNCH BLOCK (Must Have)**
+  #### Visuals
+  - [ ] Movements as a function of time
   #### Formatting
   - [X] Remove obsolete drift variables from `.env`
   - [ ] Consolidate deterministic functions
