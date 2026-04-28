@@ -4,7 +4,9 @@ import { VoidInput } from './components/VoidInput.jsx'
 import { useSSE } from './hooks/useSSE.js'
 import { api } from './services/api.js'
 import { Nav } from './components/Nav.jsx'
-import { encodePosition, decodePosition, generateRandomPosition, WORLD_BOUNDS } from './utils/coordinates.js'
+import { encodePosition, decodePosition, generateRandomPosition, isValidPosition } from './utils/coordinates.js'
+import { CoordinateControls } from './components/CoordinateControls.jsx'
+import { screenStyle } from './styles/screen.js'
 
 export default function App() {
   const [casts, setCasts] = useState([])
@@ -12,48 +14,53 @@ export default function App() {
   const [error, setError] = useState(null)
   const [initialPosition, setInitialPosition] = useState(null)
   const [isRedirecting, setIsRedirecting] = useState(false)
-  const [currentViewPosition, setCurrentViewPosition] = useState({ x: 0, y: 0 })  // ← ADD THIS
+  const [currentViewPosition, setCurrentViewPosition] = useState({ x: 0, y: 0 })
+
+  const redirectToRandomPosition = useCallback(() => {
+  if (isRedirecting) return
+  setIsRedirecting(true)
+  
+  const pos = generateRandomPosition()
+  const encoded = encodePosition(pos.x, pos.y)
+  window.location.href = `${encoded}`
+}, [isRedirecting])
 
   // Handle coordinate parsing and redirection
   useEffect(() => {
     const path = window.location.pathname
+
+    console.log('pathname:', path)
+    console.log('match:', path.match(/^\/([A-Za-z0-9-]+)$/))
+  
     
-    // Check if we're at /c/[encoded]
-    const match = path.match(/^\/c\/([A-Za-z0-9]+)$/)
+    // Check if we're at /[encoded]
+    const match = path.match(/^\/([A-Za-z0-9-]+)$/)
     
     if (match) {
       // Valid coordinate URL - decode it
       try {
         const pos = decodePosition(match[1])
-        console.log('Decoded position from URL:', pos)
-        // Validate bounds
-        if (pos.x >= WORLD_BOUNDS.min && pos.x <= WORLD_BOUNDS.max &&
-            pos.y >= WORLD_BOUNDS.min && pos.y <= WORLD_BOUNDS.max) {
+        if (isValidPosition(pos.x, pos.y)) {
           setInitialPosition(pos)
         } else {
-          throw new Error(pos, 'Out of bounds')
+          console.error('Decoded coordinates are out of bounds, redirecting to random...', pos)
+          redirectToRandomPosition()
         }
+        
       } catch (err) {
         console.error('Invalid coordinates, redirecting to random...', err)
         redirectToRandomPosition()
       }
     } else if (path === '/' || path === '') {
-      // Root path - generate random coordinates
-      redirectToRandomPosition()
+      // Root path - set initial position to center (0,0)
+      setInitialPosition({ x: 0, y: 0 })
     } else {
       // Unknown path - redirect to random
       redirectToRandomPosition()
     }
   }, [])
 
-  const redirectToRandomPosition = useCallback(() => {
-    if (isRedirecting) return
-    setIsRedirecting(true)
-    
-    const pos = generateRandomPosition(WORLD_BOUNDS.min, WORLD_BOUNDS.max)
-    const encoded = encodePosition(pos.x, pos.y)
-    window.location.href = `/c/${encoded}`
-  }, [isRedirecting])
+
 
   // Only fetch casts after we have position or if redirecting
   useEffect(() => {
@@ -87,7 +94,7 @@ export default function App() {
   // Show loading while determining position or redirecting
   if (isRedirecting) {
     return (
-      <div style={centerStyle}>
+      <div style={screenStyle}>
         <p style={{ color: 'rgba(255,255,255,0.3)' }}>finding your place in the void...</p>
       </div>
     )
@@ -95,7 +102,7 @@ export default function App() {
 
   if (!initialPosition && !isRedirecting) {
     return (
-      <div style={centerStyle}>
+      <div style={screenStyle}>
         <p style={{ color: 'rgba(255,255,255,0.3)' }}>opening the void...</p>
       </div>
     )
@@ -103,7 +110,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div style={centerStyle}>
+      <div style={screenStyle}>
         <p style={{ color: 'rgba(255,255,255,0.3)' }}>opening the void...</p>
       </div>
     )
@@ -111,7 +118,7 @@ export default function App() {
 
   if (error) {
     return (
-      <div style={centerStyle}>
+      <div style={screenStyle}>
         <p style={{ color: 'rgba(255,100,100,0.6)' }}>{error}</p>
       </div>
     )
@@ -125,18 +132,10 @@ export default function App() {
         onViewChange={setCurrentViewPosition}  // ← PASS THIS
       />
       <Nav />
+      <CoordinateControls currentViewPosition={currentViewPosition} />
       <div style={{ position: 'relative', zIndex: 100, pointerEvents: 'auto' }}>
         <VoidInput currentViewPosition={currentViewPosition} />
       </div>
     </div>
   )
-}
-
-const centerStyle = {
-  width: '100vw',
-  height: '100vh',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: '#0a0a0a',
 }

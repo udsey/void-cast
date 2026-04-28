@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { api } from '../services/api.js'
+import { buttonStyle } from '../styles/buttons.js'
 
 const MAX_LINE_LENGTH = parseInt(import.meta.env.VITE_MAX_LINE_LENGTH)
 const MAX_LINES = parseInt(import.meta.env.VITE_MAX_LINES)
@@ -128,20 +129,7 @@ export function VoidInput({ currentViewPosition }) {  // ← ADD this prop
           onClick={handleSubmit}
           disabled={status === 'loading' || !text.trim() || isOverLimit}
           style={{
-            background: status === 'success'
-              ? 'rgba(100,255,150,0.15)'
-              : status === 'error' || isOverLimit
-              ? 'rgba(255,100,100,0.15)'
-              : 'rgba(255,255,255,0.08)',
-            border: '1px solid rgba(255,255,255,0.15)',
-            borderRadius: '8px',
-            color: '#fff',
-            padding: '0.75rem 1.5rem',
-            fontSize: '1rem',
-            cursor: status === 'loading' || isOverLimit ? 'not-allowed' : 'pointer',
-            backdropFilter: 'blur(10px)',
-            transition: 'all 0.3s ease',
-            whiteSpace: 'nowrap',
+            ...buttonStyle,
           }}
         >
           {status === 'loading' && '...'}
