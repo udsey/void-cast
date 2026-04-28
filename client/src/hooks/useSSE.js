@@ -13,13 +13,13 @@ export function useSSE(onNewCast) {
     onNewCastRef.current = onNewCast
   }, [onNewCast])
 
+  const connectRef = useRef(null)
   const disconnect = useCallback(() => {
     clearTimeout(reconnectTimer.current)
     eventSourceRef.current?.close()
     eventSourceRef.current = null
   }, [])
   
-
   const connect = useCallback(() => {
     disconnect()
     if (document.hidden) return
@@ -42,14 +42,15 @@ export function useSSE(onNewCast) {
       }
     }
 
-    eventSource.onerror = () => {
-      disconnect()
-      if (!document.hidden) {
-        console.log('Reconnecting SSE in 3 seconds...')
-        reconnectTimer.current = setTimeout(connect, 3000)
-      }
-    }
+eventSource.onerror = () => {
+  disconnect()
+  if (!document.hidden) {
+    console.log('Reconnecting SSE in 3 seconds...')
+    reconnectTimer.current = setTimeout(() => connectRef.current?.(), 3000)
+  }
+}
   }, [disconnect])
+
 
   const resetIdleTimer = useCallback(() => {
     clearTimeout(idleTimer.current)
@@ -63,6 +64,9 @@ export function useSSE(onNewCast) {
   }, [connect, disconnect])
 
   useEffect(() => {
+
+    connectRef.current = connect
+
     const events = ['mousemove', 'mousedown', 'keydown', 'touchstart']
     events.forEach(e => window.addEventListener(e, resetIdleTimer))
     resetIdleTimer()
@@ -70,7 +74,7 @@ export function useSSE(onNewCast) {
       events.forEach(e => window.removeEventListener(e, resetIdleTimer))
       clearTimeout(idleTimer.current)
     }
-  }, [resetIdleTimer])
+  }, [connect, resetIdleTimer])
 
   useEffect(() => {
     connect()
@@ -80,7 +84,7 @@ export function useSSE(onNewCast) {
         disconnect()
         console.log('🔌 SSE closed (tab hidden)')
       } else {
-        connect()
+        resetIdleTimer()
         console.log('✅ SSE reconnected (tab visible)')
       }
     }
@@ -90,5 +94,5 @@ export function useSSE(onNewCast) {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       disconnect()
     }
-  }, [connect, disconnect])
+  }, [connect, disconnect, resetIdleTimer])
 }
