@@ -1,6 +1,6 @@
 import { db } from '../db/index.js'
 import { casts } from '../db/schema.js'
-import { desc, eq } from 'drizzle-orm'
+import { desc, eq, max } from 'drizzle-orm'
 
 // At the top of routes/casts.js, add these with proper fallbacks
 const VITE_MAX_LINE_LENGTH = parseInt(process.env.VITE_MAX_LINE_LENGTH) 
@@ -83,7 +83,14 @@ export async function castsRoute(app) {
   })
 
   // POST /api/cast
-  app.post('/cast', async (request, reply) => {
+  app.post('/cast', {
+    config: {
+      rateLimit: {
+        max: parseInt(process.env.RATE_LIMIT_PER_IP),
+        timeWindow: '1 minute'}
+      }
+    }, async (request, reply) => {
+
     const { text, x, y } = request.body  // ← GET x, y from request
 
     console.log('📝 Received cast:', { text: text?.substring(0, 50), x, y })

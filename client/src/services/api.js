@@ -20,8 +20,9 @@ export const api = {
     })
     
     if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Failed to create cast: ${error}`)
+      const err = new Error('Failed to create cast')
+      err.status = response.status
+      throw err
     }
     
     return response.json()

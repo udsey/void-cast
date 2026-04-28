@@ -13,7 +13,7 @@
   - [X] Update position button (to move to random place)
   - [X] Support button
   #### Sequrity
-  - [ ] Basic rate limiting (per IP, 10 casts/minute)
+  - [X] Basic rate limiting (per IP, 10 casts/minute)
   - [X] Content disclaimer link in Nav (opens modal with content warning)
   - [ ] Close SSE on idle connection (page visibility API + user inactivity)
   #### Polish

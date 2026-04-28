@@ -5,11 +5,22 @@ import { castsRoute } from './routes/casts.js'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import fs from 'fs/promises'
+import rateLimit from '@fastify/rate-limit'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const app = Fastify({ logger: true })
+const app = Fastify({ logger: true, trustProxy: true })
+
+await app.register(rateLimit, {
+  global: false,
+  max: parseInt(process.env.RATE_LIMIT_GLOBAL),
+  timeWindow: '1 minute',
+  errorResponseBuilder: (request, context) => ({
+    statusCode: 429,
+    error: 'Too many casts. Take a moment to enjoy the void.',
+  })
+})
 
 await app.register(cors, {
   origin: process.env.CLIENT_URL || 'http://localhost:5173',

@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { api } from '../services/api.js'
 import { getButtonStyle } from '../styles/buttons.js'
 import { Check, Forward, Loader, X, Ban } from 'lucide-react'
 import { Shuffle, Link } from 'lucide-react'
 import { encodePosition, generateRandomPosition } from '../utils/coordinates.js'
-
 
 
 const VITE_MAX_LINE_LENGTH = parseInt(import.meta.env.VITE_MAX_LINE_LENGTH)
@@ -53,6 +52,9 @@ export function VoidInput({ currentViewPosition }) {  // ← ADD this prop
 
   const buttonStyle = getButtonStyle(isMobile, isTablet)
 
+  const [rateLimited, setRateLimited] = useState(false)
+
+  const inputRef = useRef(null)
 
   useEffect(() => {
     const handleResize = () => {
@@ -66,9 +68,15 @@ export function VoidInput({ currentViewPosition }) {  // ← ADD this prop
 
 
   const handleExplore = () => {
+
     const pos = generateRandomPosition()
     const encoded = encodePosition(pos.x, pos.y)
-    window.location.href = `/${encoded}`
+
+    document.body.classList.add('fade-out')
+
+    setTimeout(() => {
+      window.location.href = `/${encoded}`
+    }, 300)
   }
 
   const handleShare = async () => {
@@ -95,13 +103,21 @@ export function VoidInput({ currentViewPosition }) {  // ← ADD this prop
       console.log('Cast created successfully at:', result.x, result.y)
       
       setText('')
+      setTimeout(() => inputRef.current?.focus(), 0)
       setStatus('success')
       setTimeout(() => setStatus('idle'), 2000)
     } catch (err) {
-      console.error('Failed to create cast - Full error:', err)
-      console.error('Error message:', err.message)
-      setStatus('error')
-      setTimeout(() => setStatus('idle'), 2000)
+      if (err.status === 429) {
+        setStatus('error')
+        setRateLimited(true)
+        setTimeout(() => {
+          setStatus('idle')
+          setRateLimited(false)
+        }, 5000) // reset after 1 minute
+      } else {
+        setStatus('error')
+        setTimeout(() => setStatus('idle'), 2000)
+      }
     }
   }
 
@@ -148,7 +164,8 @@ export function VoidInput({ currentViewPosition }) {  // ← ADD this prop
 
         {/* Input + submit row */}
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
-          <input
+          <input ref={inputRef}
+            autoFocus
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -187,6 +204,12 @@ export function VoidInput({ currentViewPosition }) {  // ← ADD this prop
     {isOverLimit && (
       <p style={{ color: 'rgba(255,100,100,0.8)', fontSize: '0.75rem', margin: 0 }}>
         max {VITE_MAX_LINES} lines of {VITE_MAX_LINE_LENGTH} chars each
+      </p>
+    )}
+    {/* Rate limit warning */}
+    {rateLimited && (
+      <p style={{ color: 'rgba(255,100,100,0.8)', fontSize: '0.75rem', margin: 0 }}>
+        too many casts. take a moment to enjoy the void.
       </p>
     )}
   </div>
