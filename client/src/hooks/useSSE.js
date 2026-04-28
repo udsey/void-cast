@@ -58,7 +58,7 @@ export function useSSE(onNewCast) {
 eventSource.onerror = () => {
   disconnect()
   if (!document.hidden) {
-    console.log('Reconnecting SSE in 3 seconds...')
+    console.log('⏳ Reconnecting SSE in 3 seconds...')
     reconnectTimer.current = setTimeout(() => {
       connectRef.current?.()
       fetchMissed()

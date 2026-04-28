@@ -122,8 +122,6 @@ export async function castsRoute(app) {
           driftSpeed: props.driftSpeed || 10,
         })
         .returning()
-
-      console.log('✅ Cast created at user position:', { x: x || 0, y: y || 0, id: newCast.id })
       
       // Broadcast to SSE clients
       app.sse.broadcast(newCast)

@@ -10,7 +10,6 @@ const VITE_MAX_LINE_LENGTH = parseInt(import.meta.env.VITE_MAX_LINE_LENGTH)
 const VITE_MAX_LINES = parseInt(import.meta.env.VITE_MAX_LINES)
 const INPUT_PLACEHOLDER = import.meta.env.VITE_INPUT_PLACEHOLDER
 
-console.log('Loaded config - Max line length:', VITE_MAX_LINE_LENGTH, 'Max lines:', VITE_MAX_LINES)
 
 const splitIntoLines = (text) => {
   // first break any word longer than VITE_MAX_LINE_LENGTH
@@ -94,17 +93,13 @@ export function VoidInput({ currentViewPosition }) {  // ← ADD this prop
 
     setStatus('loading')
     try {
-      console.log('Submitting cast:', text.trim())
-      console.log('Current view position:', currentViewPosition)  // ← Log position
       
       // Pass the current view position to API
-      const result = await api.createCast(text.trim(), currentViewPosition)
-      
-      console.log('Cast created successfully at:', result.x, result.y)
+      await api.createCast(text.trim(), currentViewPosition)
       
       setText('')
-      setTimeout(() => inputRef.current?.focus(), 0)
       setStatus('success')
+      setTimeout(() => inputRef.current?.focus(), 100)
       setTimeout(() => setStatus('idle'), 2000)
     } catch (err) {
       if (err.status === 429) {

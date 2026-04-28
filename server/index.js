@@ -41,7 +41,6 @@ app.decorate('sse', {
       }
       
       const message = `data: ${JSON.stringify(data)}\n\n`
-      console.log('Broadcasting to', clients.size, 'clients:', data.id || 'unknown')
       
       clients.forEach((client) => {
         try {
@@ -58,7 +57,6 @@ app.decorate('sse', {
 })
 
 app.get('/api/sse', (request, reply) => {
-  console.log('SSE connection requested')
   
   reply.raw.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -69,15 +67,14 @@ app.get('/api/sse', (request, reply) => {
 
   // Send initial connection message
   const initMessage = 'data: {"type":"connected"}\n\n'
-  console.log('Sending init message:', initMessage)
   reply.raw.write(initMessage)
   
   clients.add(reply.raw)
-  console.log('Client connected, total clients:', clients.size)
+  console.log('🟢 Client connected, total clients:', clients.size)
 
   request.raw.on('close', () => {
     clients.delete(reply.raw)
-    console.log('Client disconnected, total clients:', clients.size)
+    console.log('🔴 Client disconnected, total clients:', clients.size)
   })
 
   // keep connection open

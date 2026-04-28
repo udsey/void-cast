@@ -27,10 +27,6 @@ export default function App() {
   // Handle coordinate parsing and redirection
   useEffect(() => {
     const path = window.location.pathname
-
-    console.log('pathname:', path)
-    console.log('match:', path.match(/^\/([A-Za-z0-9-]+)$/))
-  
     
     // Check if we're at /[encoded]
     const match = path.match(/^\/([A-Za-z0-9-]+)$/)

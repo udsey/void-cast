@@ -22,11 +22,6 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← AD
   // Get current view center in world coordinates
   const getCurrentViewCenter = useCallback(() => {
     if (!svgRef.current) return { x: 0, y: 0 }
-
-    const s_height = svgRef.current.height.baseVal.value
-    const s_width = svgRef.current.width.baseVal.value
-
-    console.log('svgRef.current:', s_height, s_width)  // ← Log svgRef
     
     const transform = d3.zoomTransform(svgRef.current)
     const width = dimensions.width
@@ -51,8 +46,6 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← AD
     if (!svgRef.current) return
     const svg = d3.select(svgRef.current)
     const g = svg.select('g.cloud-group')
-    console.log('Setting up zoom - initialPosition:', initialPosition)  // ← Log initial position
-
     let initialTransform
     
     if (initialPosition) {
