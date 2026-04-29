@@ -1,38 +1,43 @@
 # void-cast
 
-A minimal real-time web app where thoughts become floating words on an
-infinite canvas.
+A minimal real-time web app where thoughts become floating words on an infinite canvas.
 
-Users type short messages that appear, animate, and drift across a
-shared space. Everyone sees the same evolving "void".
+Users type short messages that appear, animate, and drift across a shared space. Everyone sees the same evolving "void".
 
-------------------------------------------------------------------------
+---
 
 ## ✨ Features
 
--   Real-time updates via Server-Sent Events (SSE)
--   Infinite canvas with zoom & pan
--   Animated word drift
--   New message animation (center → shrink → drift)
--   Deterministic positioning (same layout for all users)
+- Real-time updates via Server-Sent Events (SSE)
+- Infinite canvas with zoom & pan
+- Animated word drift (time-based movement)
+- New message animation (center → shrink → drift)
+- Deterministic positioning (same layout for all users)
+- Share link — captures current view position, copies `/c/hash` URL
+- Random position jump button
+- Rate limiting (10 casts/minute per IP)
+- Auto-closing SSE on idle (page visibility + inactivity detection)
+- In-memory write queue with batch inserts and burst protection
+- Content disclaimer modal
+- Mobile responsive layout
 
-------------------------------------------------------------------------
+---
 
 ## 🛠 Tech Stack
 
-**Frontend** - React + Vite - D3.js
+**Frontend** — React + Vite, D3.js
 
-**Backend** - Fastify - Drizzle ORM
+**Backend** — Fastify, Drizzle ORM
 
-**Database** - PostgreSQL (Docker)
+**Database** — PostgreSQL (Docker)
 
-**Realtime** - SSE
+**Realtime** — SSE
 
-------------------------------------------------------------------------
+---
 
 ## 🚀 Getting Started
 
-``` bash
+```bash
 # install deps
 npm install
 
@@ -42,32 +47,24 @@ npm run dev
 
 Make sure PostgreSQL is running (via docker-compose).
 
-------------------------------------------------------------------------
+---
 
 ## ⚙️ Config
 
-All configuration is in `.env`.
+All configuration is in `.env`. Includes API + DB config, text limits, animation tuning, and UI labels.
 
-Includes: - API + DB config - Text limits - Animation tuning - UI labels
-
-------------------------------------------------------------------------
+---
 
 ## 📦 Project Structure
 
-    client/   → frontend (React + Vite)
-    server/   → backend (Fastify + Drizzle)
+```
+client/   → frontend (React + Vite)
+server/   → backend (Fastify + Drizzle)
+```
 
-------------------------------------------------------------------------
-
-## ⚠️ Notes
-
--   Content is user-generated and unmoderated
--   Basic limits and protections are planned
--   Project is experimental / artistic
-
-------------------------------------------------------------------------
+---
 
 ## 📄 License
 
--   Code: AGPL-3.0
--   Design/Concept: CC BY-NC 4.0
+- Code: AGPL-3.0
+- Design/Concept: CC BY-NC 4.0
