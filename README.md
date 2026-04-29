@@ -18,16 +18,15 @@ Users type short messages that appear, animate, and drift across a shared space.
 ## ✨ Features
 
 - Real-time updates via Server-Sent Events (SSE)
-- Infinite canvas with zoom & pan
+- Infinite canvas with pan
 - Animated word drift (time-based movement)
 - New message animation (center → shrink → drift)
 - Deterministic positioning (same layout for all users)
-- Share link — captures current view position, copies `/c/hash` URL
+- Share link — captures current view position, copies URL
 - Random position jump button
 - Rate limiting (10 casts/minute per IP)
 - Auto-closing SSE on idle (page visibility + inactivity detection)
 - In-memory write queue with batch inserts and burst protection
-- Content disclaimer modal
 - Mobile responsive layout
 
 ---
