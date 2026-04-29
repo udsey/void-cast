@@ -4,6 +4,15 @@ A minimal real-time web app where thoughts become floating words on an infinite 
 
 Users type short messages that appear, animate, and drift across a shared space. Everyone sees the same evolving "void".
 
+
+![React](https://img.shields.io/badge/react-Vite-61DAFB)
+![D3](https://img.shields.io/badge/viz-D3.js-F9A03C)
+![Fastify](https://img.shields.io/badge/backend-Fastify-000000)
+![PostgreSQL](https://img.shields.io/badge/db-PostgreSQL-4169E1)
+![Docker](https://img.shields.io/badge/docker-compose-2496ED)
+![SSE](https://img.shields.io/badge/realtime-SSE-orange)
+![License](https://img.shields.io/badge/license-AGPL--3.0-green)
+
 ---
 
 ## ✨ Features
