@@ -23,6 +23,7 @@
   #### Polish
   - [X] Basic mobile responsive layout
   - [X] ABOUT.md content (philosophy, rules, credits, disclaimer)
+  - [ ] Review configurations
 
 ---
 
