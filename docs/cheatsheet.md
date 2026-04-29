@@ -15,7 +15,7 @@ npm run dev:client
 
 Generate migration files from your schema
 ```
-db:generate
+npm run db:generate
 ```
 Apply migrations to Postgres
 ```
@@ -23,7 +23,7 @@ npm run db:migrate
 ```
 Force DB reset
 ```
-db:push
+npm run db:push
 ```
 ---
 

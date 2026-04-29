@@ -8,13 +8,6 @@
       "when": 1777445325903,
       "tag": "0000_glorious_metal_master",
       "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1777445325905,
-      "tag": "0001_cleanup_function",
-      "breakpoints": true
     }
   ]
 }

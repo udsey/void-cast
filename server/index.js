@@ -6,11 +6,33 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import fs from 'fs/promises'
 import rateLimit from '@fastify/rate-limit'
+import cron from 'node-cron'
+import { sql } from 'drizzle-orm'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const app = Fastify({ logger: true, trustProxy: true })
+
+
+// Database cleanup job
+cron.schedule(process.env.CLEANUP_CRON, async () => {
+  const limit = parseInt(process.env.CLEANUP_LIMIT)
+  try {
+    await db.execute(sql`
+      DELETE FROM casts 
+      WHERE id NOT IN (
+        SELECT id FROM casts 
+        ORDER BY created_at DESC 
+        LIMIT ${limit}
+      )
+    `)
+    console.log('🧹 Cleanup complete')
+  } catch (err) {
+    console.error('❌ Cleanup error:', err)
+  }
+  })
+
 
 await app.register(rateLimit, {
   global: false,

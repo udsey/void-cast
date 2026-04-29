@@ -9,7 +9,7 @@ const NEW_CAST_SIZE_MULT = parseFloat(import.meta.env.VITE_NEW_CAST_SIZE_MULT)
 const INITIAL_ZOOM       = parseFloat(import.meta.env.VITE_INITIAL_ZOOM)
 // ────────────────────────────────────────────────────
 
-export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← ADD onViewChange
+export function VoidCloud({ casts, initialPosition, onViewChange }) {
   const svgRef = useRef(null)
   const animationRefs = useRef(new Map())
   const [dimensions, setDimensions] = useState({
@@ -18,6 +18,9 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← AD
   })
 
   const words = useWordCloud(casts)
+
+  const onViewChangeRef = useRef(onViewChange)
+  useEffect(() => { onViewChangeRef.current = onViewChange}, [onViewChange])
 
   // Get current view center in world coordinates
   const getCurrentViewCenter = useCallback(() => {
@@ -30,7 +33,7 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← AD
     const centerY = (height / 2 - transform.y) / transform.k
     
     return { x: centerX, y: centerY }
-  }, [dimensions])
+  }, [dimensions, initialPosition])
 
   // handle window resize
   useEffect(() => {
@@ -60,7 +63,7 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {  // ← AD
     }
 
     const zoom = d3.zoom()
-      .scaleExtent([0.2, 5])
+      .scaleExtent([INITIAL_ZOOM, INITIAL_ZOOM])
       .on('zoom', (event) => {
         g.attr('transform', event.transform)
         // Notify parent of view change
