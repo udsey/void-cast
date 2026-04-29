@@ -8,9 +8,6 @@ import { enqueue } from '../queue.js'
 // Casts limits
 const VITE_MAX_LINE_LENGTH = parseInt(process.env.VITE_MAX_LINE_LENGTH) 
 const VITE_MAX_LINES = parseInt(process.env.VITE_MAX_LINES) 
-
-// World bounds
-const WORLD_SIZE = parseFloat(process.env.WORLD_SIZE) 
 const BASE_FONT_SIZE = parseFloat(process.env.BASE_FONT_SIZE) 
 const FONT_SIZE_VARIANCE = parseFloat(process.env.FONT_SIZE_VARIANCE) 
 

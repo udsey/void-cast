@@ -1,8 +1,13 @@
 {
   "name": "void-cast",
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
-    "db:migrate": "npm run db:migrate --prefix server"
+    "dev:all": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "db:migrate": "npm run db:migrate --prefix server",
+    "db:generate": "npm run db:generate --prefix server",
+    "db:push": "npm run db:push --prefix server"
+
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

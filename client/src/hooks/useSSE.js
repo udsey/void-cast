@@ -5,7 +5,7 @@ const IDLE_TIMEOUT = parseInt(import.meta.env.VITE_IDLE_TIMEOUT)
 
 export function useSSE(onNewCast) {
   const onNewCastRef = useRef(onNewCast)
-  const lastSeenIdRef = useRef(null)
+  const lastSeenAtRef = useRef(null)
   const eventSourceRef = useRef(null)
   const reconnectTimer = useRef(null)
   const idleTimer = useRef(null)
@@ -16,11 +16,11 @@ export function useSSE(onNewCast) {
   const fetchMissed = useCallback(async () => {
     try {
       const all = await api.getCasts()
-      const missed = lastSeenIdRef.current 
-        ? all.filter(c => c.id > lastSeenIdRef.current)
-        : all
+      const missed = lastSeenAtRef.current 
+        ? all.filter(c => new Date(c.createdAt) > new Date(lastSeenAtRef.current))
+  : all
       missed.forEach(c => onNewCastRef.current({ ...c, isNew: false }))
-      if (missed.length > 0) lastSeenIdRef.current = missed[0].id
+      if (missed.length > 0) lastSeenAtRef.current = missed[0].createdAt
     } catch (err) {
       console.error('Failed to fetch missed casts:', err)
     }
@@ -47,7 +47,7 @@ export function useSSE(onNewCast) {
         const data = JSON.parse(event.data)
         if (data.type === 'connected') return
         if (data.id && data.text) {
-          lastSeenIdRef.current = data.id
+          lastSeenAtRef.current = data.createdAt
           onNewCastRef.current({ ...data, isNew: true })
         }
       } catch (err) {
