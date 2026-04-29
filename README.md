@@ -32,17 +32,6 @@ Users type short messages that appear, animate, and drift across a shared space.
 
 ---
 
-## 🛠 Tech Stack
-
-**Frontend** — React + Vite, D3.js
-
-**Backend** — Fastify, Drizzle ORM
-
-**Database** — PostgreSQL (Docker)
-
-**Realtime** — SSE
-
----
 
 ## 🚀 Getting Started
 
