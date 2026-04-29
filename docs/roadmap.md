@@ -1,28 +1,10 @@
 ## 🚀 void-cast --- Implementation Roadmap
 
 ### 🔴 **LAUNCH BLOCK (Must Have)**
-  #### Visuals
-  - [X] Movements as a function of time
-  - [X] Set focus to Input
-  #### Formatting
-  - [X] Remove obsolete drift variables from `.env`
-  #### Database
-  - [X] Database index optimization `(createdAt)`
-  - [X] Database auto-cleanup
-  - [X] In-memory queue for database writes (batch inserts, burst protection)
-  #### Functionality
-  - [X] Share link button with copy to clipboard (captures current view position, updates URL, copies /c/hash)
-  - [X] Update position button (to move to random place)
-  - [X] Support button
-  #### Sequrity
-  - [X] Basic rate limiting (per IP, 10 casts/minute)
-  - [X] Content disclaimer link in Nav (opens modal with content warning)
-  - [X] Close SSE on idle connection: page invisibility API
-  - [X] Close SSE on idle connection: user inactivity
-  #### Polish
-  - [X] Basic mobile responsive layout
-  - [X] ABOUT.md content (philosophy, rules, credits, disclaimer)
-  - [X] Review configurations
+- [ ] Fix live update of casts
+- [ ] Add cooldown for message sending (?)
+- [ ] PG cron job for records delete
+- [ ] Moblie responsice layout
 
 ---
 

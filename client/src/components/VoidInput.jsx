@@ -35,7 +35,7 @@ const splitIntoLines = (text) => {
   return lines
 }
 
-export function VoidInput({ currentViewPosition }) {  // ← ADD this prop
+export function VoidInput({ currentViewPosition }) {
   const [text, setText] = useState('')
   const [status, setStatus] = useState('idle')
 
