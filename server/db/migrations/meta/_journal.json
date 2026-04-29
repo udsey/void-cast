@@ -5,43 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1777265789766,
-      "tag": "0000_nebulous_silhouette",
+      "when": 1777445325903,
+      "tag": "0000_glorious_metal_master",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1777297748228,
-      "tag": "0001_add_cast_properties",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1777301221698,
-      "tag": "0002_create_casts_table",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1777303756133,
-      "tag": "0003_create_casts_table",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1777390662266,
-      "tag": "0004_clumsy_moira_mactaggert",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1777400470750,
-      "tag": "0005_wakeful_anthem",
+      "when": 1777445325905,
+      "tag": "0001_cleanup_function",
       "breakpoints": true
     }
   ]

@@ -6,11 +6,10 @@
   - [X] Set focus to Input
   #### Formatting
   - [X] Remove obsolete drift variables from `.env`
-  - [ ] Consolidate deterministic functions
   #### Database
   - [X] Database index optimization `(createdAt)`
   - [X] Database auto-cleanup
-  - [ ] In-memory queue for database writes (batch inserts, burst protection)
+  - [X] In-memory queue for database writes (batch inserts, burst protection)
   #### Functionality
   - [X] Share link button with copy to clipboard (captures current view position, updates URL, copies /c/hash)
   - [X] Update position button (to move to random place)
@@ -23,6 +22,7 @@
   #### Polish
   - [X] Basic mobile responsive layout
   - [X] ABOUT.md content (philosophy, rules, credits, disclaimer)
+  - [X] Review configurations
 
 ---
 
@@ -38,6 +38,7 @@
 ### 🟡 **POLISH BLOCK**
 - [ ] Nav hover states (visual feedback on mouse over)
 - [ ] Smooth animations (fade/slide for modals, UI elements)
+- [ ] Consolidate deterministic functions
 
 
 ---

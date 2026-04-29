@@ -1,21 +1,22 @@
-import { db } from '../db/index.js'
-import { casts } from '../db/schema.js'
 import { desc, eq, max } from 'drizzle-orm'
 
-// At the top of routes/casts.js, add these with proper fallbacks
+import { db } from '../db/index.js'
+import { casts } from '../db/schema.js'
+import { enqueue } from '../queue.js'
+
+
+// Casts limits
 const VITE_MAX_LINE_LENGTH = parseInt(process.env.VITE_MAX_LINE_LENGTH) 
 const VITE_MAX_LINES = parseInt(process.env.VITE_MAX_LINES) 
-
-// World bounds from env (with fallbacks)
-const WORLD_SIZE = parseFloat(process.env.WORLD_SIZE) 
 const BASE_FONT_SIZE = parseFloat(process.env.BASE_FONT_SIZE) 
 const FONT_SIZE_VARIANCE = parseFloat(process.env.FONT_SIZE_VARIANCE) 
 
-// Drift configuration (with fallbacks)
-// Directional drift configuration
+// Drift configurations
 const DRIFT_SPEED_MIN = parseFloat(process.env.DRIFT_SPEED_MIN)
 const DRIFT_SPEED_MAX = parseFloat(process.env.DRIFT_SPEED_MAX) 
 
+
+// Split message into lines
 const splitIntoLines = (text) => {
   const normalized = text.trim().replace(/\S+/g, (word) => {
     if (word.length <= VITE_MAX_LINE_LENGTH) return word
@@ -89,7 +90,7 @@ export async function castsRoute(app) {
       }
     }, async (request, reply) => {
 
-    const { text, x, y } = request.body  // ← GET x, y from request
+    const { text, x, y } = request.body
 
     console.log('📝 Received cast:', { text: text?.substring(0, 50), x, y })
 
@@ -98,6 +99,7 @@ export async function castsRoute(app) {
     }
 
     const lines = splitIntoLines(text)
+
     if (lines.length > VITE_MAX_LINES) {
       return reply.status(400).send({
         error: `Too long — max ${VITE_MAX_LINES} lines of ${VITE_MAX_LINE_LENGTH} chars each`
@@ -111,18 +113,19 @@ export async function castsRoute(app) {
       const props = generateDeterministicProperties(0, formatted)
       
       // Insert with user's position
-      const [newCast] = await db
-        .insert(casts)
-        .values({
-          text: formatted,
-          x: x || 0,  // ← USE USER'S X POSITION (from view center)
-          y: y || 0,  // ← USE USER'S Y POSITION (from view center)
-          fontSize: props.fontSize,
-          driftDirection: props.driftDirection || 0,
-          driftSpeed: props.driftSpeed || 10,
-        })
-        .returning()
-      
+      const newCast = {
+        id: crypto.randomUUID(),
+        text: formatted,
+        x: x,  // ← USE USER'S X POSITION (from view center)
+        y: y,  // ← USE USER'S Y POSITION (from view center)
+        fontSize: props.fontSize,
+        driftDirection: props.driftDirection,
+        driftSpeed: props.driftSpeed,
+        createdAt: new Date(),
+        }
+
+      // Add cast to queue to write to table
+      enqueue(newCast)
       // Broadcast to SSE clients
       app.sse.broadcast(newCast)
       

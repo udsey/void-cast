@@ -15,7 +15,7 @@ services:
       sh -c "
         docker-entrypoint.sh postgres -c shared_preload_libraries=pg_cron &
         sleep 5 &&
-        psql $${POSTGRES_URL} -f /migrations/0006_cleanup_function.sql &&
+        psql $${POSTGRES_URL} -f /migrations/0001_cleanup_function.sql &&
         wait
       "
     volumes:
