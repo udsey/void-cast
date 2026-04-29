@@ -1,12 +1,5 @@
 ## 🚀 void-cast --- Implementation Roadmap
 
-### 🔴 **LAUNCH BLOCK (Must Have)**
-- [ ] Fix live update of casts
-- [ ] Add cooldown for message sending (?)
-- [ ] PG cron job for records delete
-- [ ] Moblie responsice layout
-
----
 
 ### 🟠 **STABILITY BLOCK**
 - [ ] Mobile responsive layout

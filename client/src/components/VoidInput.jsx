@@ -48,12 +48,35 @@ export function VoidInput({ currentViewPosition }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const [isTablet, setIsTablet] = useState(window.innerWidth >= 768 && window.innerWidth < 1024)
 
-
   const buttonStyle = getButtonStyle(isMobile, isTablet)
 
   const [rateLimited, setRateLimited] = useState(false)
 
   const inputRef = useRef(null)
+
+  const hasVirtualKeyboard = 'virtualKeyboard' in navigator || 'visualViewport' in window && /Mobi|Android|iPad|iPhone/i.test(navigator.userAgent)
+
+  // Focuse effect
+  useEffect(() => {
+    if (hasVirtualKeyboard) return
+    inputRef.current?.focus()
+  }, [])
+
+  const [bottomOffset, setBottomOffset] = useState(hasVirtualKeyboard ? 16 : 32)
+
+  // Bottons position for mobile devices
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+    const update = () => setBottomOffset(window.innerHeight - vv.height + vv.offsetTop + 32)
+    vv.addEventListener('resize', update)
+    vv.addEventListener('scroll', update)
+    return () => {
+      vv.removeEventListener('resize', update)
+      vv.removeEventListener('scroll', update)
+    }
+  }, [])
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -99,7 +122,7 @@ export function VoidInput({ currentViewPosition }) {
       
       setText('')
       setStatus('success')
-      setTimeout(() => inputRef.current?.focus(), 100)
+      if (!hasVirtualKeyboard) setTimeout(() => inputRef.current?.focus(), 100)
       setTimeout(() => setStatus('idle'), 2000)
     } catch (err) {
       if (err.status === 429) {
@@ -123,7 +146,7 @@ export function VoidInput({ currentViewPosition }) {
   return (
   <div style={{
     position: 'fixed',
-    bottom: '2rem',
+    bottom: `${bottomOffset}px`,
     left: '50%',
     transform: 'translateX(-50%)',
     display: 'flex',
@@ -160,7 +183,6 @@ export function VoidInput({ currentViewPosition }) {
         {/* Input + submit row */}
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
           <input ref={inputRef}
-            autoFocus
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
