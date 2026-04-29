@@ -1,8 +1,11 @@
 # void-cast
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/2e601844-ca3d-4c3d-9c25-58af787e40db" width="33%" />
-  <img src="https://github.com/user-attachments/assets/6fe46ebe-8844-4616-802e-4b9f3ddf661c" width="33%" />
-  <img src="https://github.com/user-attachments/assets/98e2a3f0-d2ac-42ea-944a-d3a0cf8b5b04" width="33%" />
+  <span>
+    <img src="https://github.com/user-attachments/assets/6fe46ebe-8844-4616-802e-4b9f3ddf661c" width="49%" />
+  </span>
+  <span>
+    <img src="https://github.com/user-attachments/assets/98e2a3f0-d2ac-42ea-944a-d3a0cf8b5b04" width="49%" />
+  </span>
 </p>
 
 <p align="center">
