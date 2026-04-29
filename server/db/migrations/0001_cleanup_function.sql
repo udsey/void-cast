@@ -14,6 +14,6 @@ $$ LANGUAGE plpgsql;
 
 SELECT cron.schedule(
   'cleanup-casts',
-  '*0 * * * *',
+  '0 * * * *',
   $$SELECT cleanup_old_casts();$$
 );

@@ -1,6 +1,6 @@
 {
-  "id": "a181851b-8116-4954-9c18-cdd810c7fa96",
-  "prevId": "043f405d-acb8-40c3-b95c-dbecde17124a",
+  "id": "b163c8ef-1234-5678-beef-053411836856",
+  "prevId": "c3bf6022-49b4-44aa-b178-0b39ca6babae",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -10,7 +10,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true
         },
@@ -24,71 +24,56 @@
           "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
+          "notNull": false
         },
         "x": {
           "name": "x",
           "type": "real",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "y": {
           "name": "y",
           "type": "real",
           "primaryKey": false,
-          "notNull": true
-        },
-        "rotation": {
-          "name": "rotation",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "font_size": {
           "name": "font_size",
           "type": "real",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "drift_amplitude_x": {
-          "name": "drift_amplitude_x",
+        "drift_direction": {
+          "name": "drift_direction",
           "type": "real",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "drift_amplitude_y": {
-          "name": "drift_amplitude_y",
+        "drift_speed": {
+          "name": "drift_speed",
           "type": "real",
           "primaryKey": false,
-          "notNull": true
-        },
-        "drift_frequency_x": {
-          "name": "drift_frequency_x",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "drift_frequency_y": {
-          "name": "drift_frequency_y",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "drift_phase_x": {
-          "name": "drift_phase_x",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "drift_phase_y": {
-          "name": "drift_phase_y",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "casts_created_at_idx": {
+          "name": "casts_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
