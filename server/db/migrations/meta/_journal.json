@@ -43,6 +43,13 @@
       "when": 1777400470750,
       "tag": "0005_wakeful_anthem",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1777443054559,
+      "tag": "0006_classy_titania",
+      "breakpoints": true
     }
   ]
 }
