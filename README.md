@@ -1,19 +1,19 @@
 # void-cast
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2e601844-ca3d-4c3d-9c25-58af787e40db" width="33%" />
+  <img src="https://github.com/user-attachments/assets/6fe46ebe-8844-4616-802e-4b9f3ddf661c" width="33%" />
+  <img src="https://github.com/user-attachments/assets/98e2a3f0-d2ac-42ea-944a-d3a0cf8b5b04" width="33%" />
+</p>
 
-A minimal real-time web app where thoughts become floating words on an infinite canvas.
-
-Users type short messages that appear, animate, and drift across a shared space. Everyone sees the same evolving "void".
-
-
-![React](https://img.shields.io/badge/react-Vite-61DAFB)
-![D3](https://img.shields.io/badge/viz-D3.js-F9A03C)
-![Fastify](https://img.shields.io/badge/backend-Fastify-000000)
-![PostgreSQL](https://img.shields.io/badge/db-PostgreSQL-4169E1)
-![Docker](https://img.shields.io/badge/docker-compose-2496ED)
-![SSE](https://img.shields.io/badge/realtime-SSE-orange)
-![License](https://img.shields.io/badge/license-AGPL--3.0-green)
-
----
+<p align="center">
+  <img src="https://img.shields.io/badge/react-Vite-61DAFB" />&nbsp;
+  <img src="https://img.shields.io/badge/viz-D3.js-F9A03C" />&nbsp;
+  <img src="https://img.shields.io/badge/backend-Fastify-000000" />&nbsp;
+  <img src="https://img.shields.io/badge/db-PostgreSQL-4169E1" />&nbsp;
+  <img src="https://img.shields.io/badge/docker-compose-2496ED" />&nbsp;
+  <img src="https://img.shields.io/badge/realtime-SSE-orange" />&nbsp;
+  <img src="https://img.shields.io/badge/license-AGPL--3.0-green" />
+</p>
 
 ## ✨ Features
 
