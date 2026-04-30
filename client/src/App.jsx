@@ -21,7 +21,9 @@ export default function App() {
   
   const pos = generateRandomPosition()
   const encoded = encodePosition(pos.x, pos.y)
-  window.location.href = `${encoded}`
+  
+  window.history.replaceState(null, '', `/${encoded}`)
+
 }, [isRedirecting])
 
   // Handle coordinate parsing and redirection
