@@ -35,7 +35,7 @@ cron.schedule(process.env.CLEANUP_CRON, async () => {
       SELECT count(*) as count FROM deleted
     `)
     const count = result.rows[0].count
-    if (conunt > 0) console.log(`🧹 Cleanup complete — ${count} rows deleted`)
+    if (count > 0) console.log(`🧹 Cleanup complete — ${count} rows deleted`)
   } catch (err) {
     console.error('❌ Cleanup error:', err)
   }
