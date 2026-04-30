@@ -3,7 +3,7 @@ import { api } from '../services/api.js'
 import { getButtonStyle } from '../styles/buttons.js'
 import { Check, Forward, Loader, X, Ban } from 'lucide-react'
 import { Shuffle, Link } from 'lucide-react'
-import { encodePosition, generateRandomPosition } from '../utils/coordinates.js'
+import { encodePosition } from '../utils/coordinates.js'
 
 
 const VITE_MAX_LINE_LENGTH = parseInt(import.meta.env.VITE_MAX_LINE_LENGTH)
@@ -35,7 +35,7 @@ const splitIntoLines = (text) => {
   return lines
 }
 
-export function VoidInput({ currentViewPosition }) {
+export function VoidInput({ currentViewPosition, onExplore }) {
   const [text, setText] = useState('')
   const [status, setStatus] = useState('idle')
 
@@ -90,15 +90,7 @@ export function VoidInput({ currentViewPosition }) {
 
 
   const handleExplore = () => {
-
-    const pos = generateRandomPosition()
-    const encoded = encodePosition(pos.x, pos.y)
-
-    document.body.classList.add('fade-out')
-
-    setTimeout(() => {
-      window.location.href = `/${encoded}`
-    }, 300)
+    onExplore()
   }
 
   const handleShare = async () => {

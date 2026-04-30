@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useImperativeHandle, forwardRef } from 'react'
 import * as d3 from 'd3'
 import { useWordCloud } from '../hooks/useWordCloud.js'
 import { getPositionAtTime } from '../utils/movement.js'
@@ -9,9 +9,10 @@ const NEW_CAST_SIZE_MULT = parseFloat(import.meta.env.VITE_NEW_CAST_SIZE_MULT)
 const INITIAL_ZOOM       = parseFloat(import.meta.env.VITE_INITIAL_ZOOM)
 // ────────────────────────────────────────────────────
 
-export function VoidCloud({ casts, initialPosition, onViewChange }) {
+export const VoidCloud = forwardRef(function VoidCloud({ casts, initialPosition, onViewChange }, ref) {
   const svgRef = useRef(null)
   const animationRefs = useRef(new Map())
+  const zoomInstanceRef = useRef(null)
   const [dimensions, setDimensions] = useState({
     width: window.innerWidth,
     height: window.innerHeight
@@ -66,7 +67,6 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {
       .scaleExtent([INITIAL_ZOOM, INITIAL_ZOOM])
       .on('zoom', (event) => {
         g.attr('transform', event.transform)
-        // Notify parent of view change
         if (onViewChange) {
           const center = getCurrentViewCenter()
           onViewChange(center)
@@ -75,7 +75,9 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {
 
     svg.call(zoom)
     svg.call(zoom.transform, initialTransform)
-    
+
+    zoomInstanceRef.current = { zoom, svg }
+
     // Initial view center notification
     if (onViewChange) {
       setTimeout(() => {
@@ -84,6 +86,19 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {
       }, 100)
     }
   }, [dimensions, initialPosition, onViewChange, getCurrentViewCenter])
+
+  // Expose panTo method
+  useImperativeHandle(ref, () => ({
+    panTo: (x, y) => {
+      if (!zoomInstanceRef.current) return
+      const { zoom, svg } = zoomInstanceRef.current
+      const transform = d3.zoomIdentity
+        .translate(dimensions.width / 2, dimensions.height / 2)
+        .scale(INITIAL_ZOOM)
+        .translate(-x, -y)
+      svg.transition().duration(800).call(zoom.transform, transform)
+    }
+  }), [dimensions])
 
   // Clean up animations on unmount
   useEffect(() => {
@@ -95,29 +110,20 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {
     }
   }, [])
 
-
   const startDrift = useCallback((element, word) => {
     if (animationRefs.current.has(element)) {
       cancelAnimationFrame(animationRefs.current.get(element))
     }
     
     const animate = () => {
-
       const { x, y } = getPositionAtTime(word)
       element.attr('transform', `translate(${x},${y})`)
-      
       const frameId = requestAnimationFrame(animate)
       animationRefs.current.set(element, frameId)
-
     }
     
     animate()
-}, [])
-
-
-
-
-
+  }, [])
 
   // render and animate words
   useEffect(() => {
@@ -162,24 +168,21 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {
             .attr('dy', i === 0 ? 0 : '1.2em')
             .text(line)
         })
-        // Start deterministic drift
         startDrift(el, d)
       })
 
-          // new cast - animated entrance, then deterministic drift
+    // new cast - animated entrance, then deterministic drift
     entered.filter((d) => d.isNew)
       .each(function(d) {
         const el = d3.select(this)
         const finalSize = d.fontSize
         
-        // render tspan lines
         d.text.split('\n').forEach((line, i) => {
           el.append('tspan')
             .attr('x', 0)
             .attr('dy', i === 0 ? 0 : '1.2em')
             .text(line)
         })
-        
 
         el
           .attr('font-size', `${finalSize * NEW_CAST_SIZE_MULT}px`)
@@ -227,4 +230,4 @@ export function VoidCloud({ casts, initialPosition, onViewChange }) {
       <g className="cloud-group" />
     </svg>
   )
-}
+})

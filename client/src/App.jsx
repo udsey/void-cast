@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { VoidCloud } from './components/VoidCloud.jsx'
 import { VoidInput } from './components/VoidInput.jsx'
 import { useSSE } from './hooks/useSSE.js'
@@ -8,23 +8,20 @@ import { encodePosition, decodePosition, generateRandomPosition, isValidPosition
 import { screenStyle } from './styles/screen.js'
 
 export default function App() {
+
+  const cloudRef = useRef(null)
   const [casts, setCasts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [initialPosition, setInitialPosition] = useState(null)
-  const [isRedirecting, setIsRedirecting] = useState(false)
   const [currentViewPosition, setCurrentViewPosition] = useState({ x: 0, y: 0 })
 
   const redirectToRandomPosition = useCallback(() => {
-  if (isRedirecting) return
-  setIsRedirecting(true)
-  
-  const pos = generateRandomPosition()
-  const encoded = encodePosition(pos.x, pos.y)
-  
-  window.history.replaceState(null, '', `/${encoded}`)
-
-}, [isRedirecting])
+    const pos = generateRandomPosition()
+    const encoded = encodePosition(pos.x, pos.y)
+    window.history.replaceState(null, '', `/${encoded}`)
+    cloudRef.current?.panTo(pos.x, pos.y)
+  }, [])
 
   // Handle coordinate parsing and redirection
   useEffect(() => {
@@ -60,7 +57,6 @@ export default function App() {
 
   // Only fetch casts after we have position or if redirecting
   useEffect(() => {
-    if (isRedirecting) return
     if (!initialPosition && window.location.pathname !== '/') return
     
     const fetchCasts = async () => {
@@ -76,7 +72,7 @@ export default function App() {
     }
 
     fetchCasts()
-  }, [initialPosition, isRedirecting])
+  }, [initialPosition])
 
   const handleNewCast = useCallback((newCast) => {
     setCasts((prev) => {
@@ -88,18 +84,10 @@ export default function App() {
   useSSE(handleNewCast)
 
   // Show loading while determining position or redirecting
-  if (isRedirecting) {
+  if (!initialPosition) {
     return (
       <div style={screenStyle}>
         <p style={{ color: 'rgba(255,255,255,0.3)' }}>finding your place in the void...</p>
-      </div>
-    )
-  }
-
-  if (!initialPosition && !isRedirecting) {
-    return (
-      <div style={screenStyle}>
-        <p style={{ color: 'rgba(255,255,255,0.3)' }}>opening the void...</p>
       </div>
     )
   }
@@ -122,14 +110,14 @@ export default function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a0a0a', position: 'relative' }}>
-      <VoidCloud 
+      <VoidCloud ref={cloudRef}
         casts={casts} 
         initialPosition={initialPosition}
         onViewChange={setCurrentViewPosition}  // ← PASS THIS
       />
       <Nav />
       <div style={{zIndex: 100, pointerEvents: 'auto' }}>
-        <VoidInput currentViewPosition={currentViewPosition} />
+        <VoidInput currentViewPosition={currentViewPosition} onExplore={redirectToRandomPosition} />
       </div>
     </div>
   )
