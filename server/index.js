@@ -8,26 +8,34 @@ import fs from 'fs/promises'
 import rateLimit from '@fastify/rate-limit'
 import cron from 'node-cron'
 import { sql } from 'drizzle-orm'
+import { db } from './db/index.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const app = Fastify({ logger: true, trustProxy: true })
+const app = Fastify({ 
+  logger: process.env.NODE_ENV !== 'production', 
+  trustProxy: true })
 
 
 // Database cleanup job
 cron.schedule(process.env.CLEANUP_CRON, async () => {
   const limit = parseInt(process.env.CLEANUP_LIMIT)
   try {
-    await db.execute(sql`
-      DELETE FROM casts 
-      WHERE id NOT IN (
-        SELECT id FROM casts 
-        ORDER BY created_at DESC 
-        LIMIT ${limit}
+    const result = await db.execute(sql`
+      WITH deleted AS (
+        DELETE FROM casts 
+        WHERE id NOT IN (
+          SELECT id FROM casts 
+          ORDER BY created_at DESC 
+          LIMIT ${limit}
+        )
+        RETURNING id
       )
+      SELECT count(*) as count FROM deleted
     `)
-    console.log('🧹 Cleanup complete')
+    const count = result.rows[0].count
+    if (conunt > 0) console.log(`🧹 Cleanup complete — ${count} rows deleted`)
   } catch (err) {
     console.error('❌ Cleanup error:', err)
   }

@@ -92,7 +92,7 @@ export async function castsRoute(app) {
 
     const { text, x, y } = request.body
 
-    console.log('📝 Received cast:', { text: text?.substring(0, 50), x, y })
+    console.log(`📝 Received cast: "${text?.substring(0, 50)}..." @ (${x?.toFixed(0)}, ${y?.toFixed(0)})`)
 
     if (!text || text.trim() === '') {
       return reply.status(400).send({ error: 'Text cannot be empty' })
