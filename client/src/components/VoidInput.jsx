@@ -103,6 +103,8 @@ export function VoidInput({ currentViewPosition, onExplore }) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const [errorMessage, setErrorMessage] = useState(null)
+
   const handleSubmit = async () => {
     if (!text.trim() || isOverLimit) return
 
@@ -124,10 +126,11 @@ export function VoidInput({ currentViewPosition, onExplore }) {
           setStatus('idle')
           setRateLimited(false)
         }, 5000) // reset after 1 minute
-      } else {
-        setStatus('error')
-        setTimeout(() => setStatus('idle'), 2000)
-      }
+    } else {
+      setStatus('error')
+      setErrorMessage(err?.message || 'Something went wrong')
+      setTimeout(() => { setStatus('idle'); setErrorMessage(null) }, 3000)
+    }
     }
   }
 
@@ -212,7 +215,7 @@ export function VoidInput({ currentViewPosition, onExplore }) {
     {/* Overflow warning */}
     {isOverLimit && (
       <p style={{ color: 'rgba(255,100,100,0.8)', fontSize: '0.75rem', margin: 0 }}>
-        max {VITE_MAX_LINES} lines of {VITE_MAX_LINE_LENGTH} chars each
+        Message too long — max {VITE_MAX_LINES * VITE_MAX_LINE_LENGTH} characters
       </p>
     )}
     {/* Rate limit warning */}
@@ -221,6 +224,11 @@ export function VoidInput({ currentViewPosition, onExplore }) {
         too many casts. take a moment to enjoy the void.
       </p>
     )}
+    {errorMessage && !rateLimited && (
+  <p style={{ color: 'rgba(255,100,100,0.8)', fontSize: '0.75rem', margin: 0 }}>
+    {errorMessage}
+  </p>
+  )}
   </div>
 )
 }

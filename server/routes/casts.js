@@ -102,7 +102,7 @@ export async function castsRoute(app) {
 
     if (lines.length > VITE_MAX_LINES) {
       return reply.status(400).send({
-        error: `Too long — max ${VITE_MAX_LINES} lines of ${VITE_MAX_LINE_LENGTH} chars each`
+        error: `Message too long — max ${VITE_MAX_LINES * VITE_MAX_LINE_LENGTH} characters`   
       })
     }
 

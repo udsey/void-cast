@@ -21,8 +21,8 @@ primary_region = 'syd'
   count = 1
 
 [build.args]
-  VITE_MAX_LINE_LENGTH = "25"
-  VITE_MAX_LINES = "3"
+  VITE_MAX_LINE_LENGTH = "10"
+  VITE_MAX_LINES = "30"
   VITE_SHRINK_DURATION = "3000"
   VITE_NEW_CAST_SIZE_MULT = "16"
   VITE_INITIAL_ZOOM = "0.7"

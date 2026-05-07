@@ -17,12 +17,13 @@ export const api = {
       }),
     })
     
-    if (!response.ok) {
-      const err = new Error('Failed to create cast')
-      err.status = response.status
-      throw err
-    }
-    
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}))
+    const err = new Error(body.error || 'Failed to create cast')
+    err.status = response.status
+    throw err
+  }
+      
     return response.json()
   },
 
