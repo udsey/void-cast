@@ -4,9 +4,9 @@ import { useWordCloud } from '../hooks/useWordCloud.js'
 import { getPositionAtTime } from '../utils/movement.js'
 
 // ── tuneable variables ──────────────────────────────
-const SHRINK_DURATION    = parseInt(import.meta.env.VITE_SHRINK_DURATION)
-const NEW_CAST_SIZE_MULT = parseFloat(import.meta.env.VITE_NEW_CAST_SIZE_MULT)
-const INITIAL_ZOOM       = parseFloat(import.meta.env.VITE_INITIAL_ZOOM)
+const SHRINK_DURATION = 3000
+const NEW_CAST_SIZE_MULT = 16
+const INITIAL_ZOOM = 0.7
 // ────────────────────────────────────────────────────
 
 export const VoidCloud = forwardRef(function VoidCloud({ casts, initialPosition, onViewChange }, ref) {
@@ -26,15 +26,15 @@ export const VoidCloud = forwardRef(function VoidCloud({ casts, initialPosition,
   // Get current view center in world coordinates
   const getCurrentViewCenter = useCallback(() => {
     if (!svgRef.current) return { x: 0, y: 0 }
-    
+
     const transform = d3.zoomTransform(svgRef.current)
     const width = dimensions.width
     const height = dimensions.height
     const centerX = (width / 2 - transform.x) / transform.k
     const centerY = (height / 2 - transform.y) / transform.k
-    
+
     return { x: centerX, y: centerY }
-  }, [dimensions, initialPosition])
+  }, [dimensions])
 
   // handle window resize
   useEffect(() => {
@@ -51,7 +51,7 @@ export const VoidCloud = forwardRef(function VoidCloud({ casts, initialPosition,
     const svg = d3.select(svgRef.current)
     const g = svg.select('g.cloud-group')
     let initialTransform
-    
+
     if (initialPosition) {
       initialTransform = d3.zoomIdentity
         .translate(dimensions.width / 2, dimensions.height / 2)
@@ -64,14 +64,20 @@ export const VoidCloud = forwardRef(function VoidCloud({ casts, initialPosition,
     }
 
     const zoom = d3.zoom()
-      .scaleExtent([INITIAL_ZOOM, INITIAL_ZOOM])
-      .on('zoom', (event) => {
-        g.attr('transform', event.transform)
-        if (onViewChange) {
-          const center = getCurrentViewCenter()
-          onViewChange(center)
-        }
-      })
+  .scaleExtent([INITIAL_ZOOM, INITIAL_ZOOM])
+  .on('zoom', (event) => {
+    g.attr('transform', event.transform)
+    if (onViewChange) {
+      const center = getCurrentViewCenter()
+      onViewChange(center)
+    }
+  })
+  .on('end', () => {
+    if (onViewChangeRef.current) {
+      const center = getCurrentViewCenter()
+      onViewChangeRef.current(center)
+    }
+  })
 
     svg.call(zoom)
     svg.call(zoom.transform, initialTransform)
@@ -114,14 +120,14 @@ export const VoidCloud = forwardRef(function VoidCloud({ casts, initialPosition,
     if (animationRefs.current.has(element)) {
       cancelAnimationFrame(animationRefs.current.get(element))
     }
-    
+
     const animate = () => {
       const { x, y } = getPositionAtTime(word)
       element.attr('transform', `translate(${x},${y})`)
       const frameId = requestAnimationFrame(animate)
       animationRefs.current.set(element, frameId)
     }
-    
+
     animate()
   }, [])
 
@@ -176,7 +182,7 @@ export const VoidCloud = forwardRef(function VoidCloud({ casts, initialPosition,
       .each(function(d) {
         const el = d3.select(this)
         const finalSize = d.fontSize
-        
+
         d.text.split('\n').forEach((line, i) => {
           el.append('tspan')
             .attr('x', 0)

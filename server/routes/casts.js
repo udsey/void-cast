@@ -6,21 +6,21 @@ import { enqueue } from '../queue.js'
 
 
 // Casts limits
-const VITE_MAX_LINE_LENGTH = parseInt(process.env.VITE_MAX_LINE_LENGTH) 
-const VITE_MAX_LINES = parseInt(process.env.VITE_MAX_LINES) 
-const BASE_FONT_SIZE = parseFloat(process.env.BASE_FONT_SIZE) 
-const FONT_SIZE_VARIANCE = parseFloat(process.env.FONT_SIZE_VARIANCE) 
+const MAX_LINE_LENGTH = 30
+const MAX_LINES = 30
+const BASE_FONT_SIZE = parseFloat(process.env.BASE_FONT_SIZE)
+const FONT_SIZE_VARIANCE = parseFloat(process.env.FONT_SIZE_VARIANCE)
 
 // Drift configurations
 const DRIFT_SPEED_MIN = parseFloat(process.env.DRIFT_SPEED_MIN)
-const DRIFT_SPEED_MAX = parseFloat(process.env.DRIFT_SPEED_MAX) 
+const DRIFT_SPEED_MAX = parseFloat(process.env.DRIFT_SPEED_MAX)
 
 
 // Split message into lines
 const splitIntoLines = (text) => {
   const normalized = text.trim().replace(/\S+/g, (word) => {
-    if (word.length <= VITE_MAX_LINE_LENGTH) return word
-    return word.match(new RegExp(`.{1,${VITE_MAX_LINE_LENGTH}}`, 'g')).join(' ')
+    if (word.length <= MAX_LINE_LENGTH) return word
+    return word.match(new RegExp(`.{1,${MAX_LINE_LENGTH}}`, 'g')).join(' ')
   })
 
   const words = normalized.split(' ')
@@ -28,7 +28,7 @@ const splitIntoLines = (text) => {
   let current = ''
 
   for (const word of words) {
-    if (current.length + word.length + 1 <= VITE_MAX_LINE_LENGTH) {
+    if (current.length + word.length + 1 <= MAX_LINE_LENGTH) {
       current = current ? `${current} ${word}` : word
     } else {
       if (current) lines.push(current)
@@ -56,9 +56,9 @@ function generateDeterministicProperties(castId, text) {
     seed = ((seed << 5) - seed) + seedStr.charCodeAt(i)
     seed |= 0
   }
-  
+
   const rng = seededRandom(Math.abs(seed))
-  
+
     return {
     fontSize: BASE_FONT_SIZE + (rng() - 0.5) * FONT_SIZE_VARIANCE,
     driftDirection: rng() * Math.PI * 2,
@@ -100,9 +100,9 @@ export async function castsRoute(app) {
 
     const lines = splitIntoLines(text)
 
-    if (lines.length > VITE_MAX_LINES) {
+    if (lines.length > MAX_LINES) {
       return reply.status(400).send({
-        error: `Message too long — max ${VITE_MAX_LINES * VITE_MAX_LINE_LENGTH} characters`   
+        error: `Message too long — max ${MAX_LINES * MAX_LINE_LENGTH} characters`
       })
     }
 
@@ -111,7 +111,7 @@ export async function castsRoute(app) {
     try {
       // Generate deterministic properties (position will come from user)
       const props = generateDeterministicProperties(0, formatted)
-      
+
       // Insert with user's position
       const newCast = {
         id: crypto.randomUUID(),
@@ -128,7 +128,7 @@ export async function castsRoute(app) {
       enqueue(newCast)
       // Broadcast to SSE clients
       app.sse.broadcast(newCast)
-      
+
       return reply.status(201).send(newCast)
     } catch (err) {
       console.error('❌ Create error:', err)

@@ -2,7 +2,7 @@
 
 void-cast is free and open to all.  If you'd like to keep the void alive:
 
-<p style="text-indent: 2rem"><a href="https://ko-fi.com/udsey">☕ Buy me a coffee</a></p>
+<p style="text-indent: 2rem"><a href="https://ko-fi.com/udsey">☕ Donate</a></p>
 <p style="text-indent: 2rem"><a href="https://github.com/udsey/void-cast">⭐ Star on GitHub</a></p>
 
 ---

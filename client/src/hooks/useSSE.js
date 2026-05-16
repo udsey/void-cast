@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useRef } from 'react'
 import { api } from '../services/api.js'
 
-const IDLE_TIMEOUT = parseInt(import.meta.env.VITE_IDLE_TIMEOUT)
+const IDLE_TIMEOUT = 300000
 
 export function useSSE(onNewCast) {
   const onNewCastRef = useRef(onNewCast)
@@ -16,7 +16,7 @@ export function useSSE(onNewCast) {
   const fetchMissed = useCallback(async () => {
     try {
       const all = await api.getCasts()
-      const missed = lastSeenAtRef.current 
+      const missed = lastSeenAtRef.current
         ? all.filter(c => new Date(c.createdAt) > new Date(lastSeenAtRef.current))
   : all
       missed.forEach(c => onNewCastRef.current({ ...c, isNew: false }))
@@ -25,7 +25,7 @@ export function useSSE(onNewCast) {
       console.error('Failed to fetch missed casts:', err)
     }
   }, [])
-  
+
   const disconnect = useCallback(() => {
     clearTimeout(reconnectTimer.current)
     eventSourceRef.current?.close()
@@ -100,14 +100,14 @@ eventSource.onerror = () => {
     connectRef.current = connect
 
     const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click']
-    
+
     const handleUserActivity = () => {
       resetIdleTimer()
     }
-    
+
     events.forEach(e => window.addEventListener(e, handleUserActivity))
     resetIdleTimer()
-    
+
     return () => {
       events.forEach(e => window.removeEventListener(e, handleUserActivity))
       clearTimeout(idleTimer.current)

@@ -15,7 +15,6 @@ export default function App() {
   const [error, setError] = useState(null)
   const [initialPosition, setInitialPosition] = useState(null)
   const [currentViewPosition, setCurrentViewPosition] = useState({ x: 0, y: 0 })
-
   const redirectToRandomPosition = useCallback(() => {
     const pos = generateRandomPosition()
     const encoded = encodePosition(pos.x, pos.y)
@@ -23,13 +22,18 @@ export default function App() {
     cloudRef.current?.panTo(pos.x, pos.y)
   }, [])
 
+  useEffect(() => {
+    if (currentViewPosition.x === 0 && currentViewPosition.y === 0) return
+    window.history.replaceState(null, '', `/${encodePosition(currentViewPosition.x, currentViewPosition.y)}`)
+  }, [currentViewPosition])
+
   // Handle coordinate parsing and redirection
   useEffect(() => {
     const path = window.location.pathname
-    
+
     // Check if we're at /[encoded]
     const match = path.match(/^\/([A-Za-z0-9-]+)$/)
-    
+
     if (match) {
       try {
         const pos = decodePosition(match[1])
@@ -39,7 +43,7 @@ export default function App() {
           console.error('Decoded coordinates are out of bounds, redirecting to random...', pos)
           setTimeout(() => redirectToRandomPosition(), 0)
         }
-        
+
       } catch (err) {
         console.error('Invalid coordinates, redirecting to random...', err)
         setTimeout(() => redirectToRandomPosition(), 0)
@@ -58,7 +62,7 @@ export default function App() {
   // Only fetch casts after we have position or if redirecting
   useEffect(() => {
     if (!initialPosition && window.location.pathname !== '/') return
-    
+
     const fetchCasts = async () => {
       try {
         const data = await api.getCasts()
@@ -80,7 +84,7 @@ export default function App() {
       return [{ ...newCast }, ...prev]
     })
   }, [])
-  
+
   useSSE(handleNewCast)
 
   // Show loading while determining position or redirecting
@@ -111,9 +115,9 @@ export default function App() {
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a0a0a', position: 'relative' }}>
       <VoidCloud ref={cloudRef}
-        casts={casts} 
+        casts={casts}
         initialPosition={initialPosition}
-        onViewChange={setCurrentViewPosition}  // ← PASS THIS
+        onViewChange={setCurrentViewPosition}
       />
       <Nav />
       <div style={{zIndex: 100, pointerEvents: 'auto' }}>

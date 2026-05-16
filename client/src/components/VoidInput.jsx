@@ -6,17 +6,14 @@ import { Shuffle, Link } from 'lucide-react'
 import { encodePosition } from '../utils/coordinates.js'
 
 
-const VITE_MAX_LINE_LENGTH = parseInt(import.meta.env.VITE_MAX_LINE_LENGTH)
-const VITE_MAX_LINES = parseInt(import.meta.env.VITE_MAX_LINES)
-const INPUT_PLACEHOLDER = import.meta.env.VITE_INPUT_PLACEHOLDER
-
+const MAX_LINE_LENGTH = 30
+const MAX_LINES = 30
+const INPUT_PLACEHOLDER = 'into the void...'
 
 const splitIntoLines = (text) => {
-  // first break any word longer than VITE_MAX_LINE_LENGTH
   const normalized = text.trim().replace(/\S+/g, (word) => {
-    if (word.length <= VITE_MAX_LINE_LENGTH) return word
-    // chunk it into VITE_MAX_LINE_LENGTH pieces
-    return word.match(new RegExp(`.{1,${VITE_MAX_LINE_LENGTH}}`, 'g')).join(' ')
+    if (word.length <= MAX_LINE_LENGTH) return word
+    return word.match(new RegExp(`.{1,${MAX_LINE_LENGTH}}`, 'g')).join(' ')
   })
 
   const words = normalized.split(' ')
@@ -24,7 +21,7 @@ const splitIntoLines = (text) => {
   let current = ''
 
   for (const word of words) {
-    if (current.length + word.length + 1 <= VITE_MAX_LINE_LENGTH) {
+    if (current.length + word.length + 1 <= MAX_LINE_LENGTH) {
       current = current ? `${current} ${word}` : word
     } else {
       if (current) lines.push(current)
@@ -40,11 +37,10 @@ export function VoidInput({ currentViewPosition, onExplore }) {
   const [status, setStatus] = useState('idle')
 
   const lines = splitIntoLines(text)
-  const isOverLimit = lines.length > VITE_MAX_LINES
-  const lineCount = Math.min(lines.length, VITE_MAX_LINES + 1)
+  const isOverLimit = lines.length > MAX_LINES
 
   const [copied, setCopied] = useState(false)
-  
+
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const [isTablet, setIsTablet] = useState(window.innerWidth >= 768 && window.innerWidth < 1024)
 
@@ -60,7 +56,7 @@ export function VoidInput({ currentViewPosition, onExplore }) {
   useEffect(() => {
     if (hasVirtualKeyboard) return
     inputRef.current?.focus()
-  }, [])
+  }, [hasVirtualKeyboard])
 
   const [bottomOffset, setBottomOffset] = useState(hasVirtualKeyboard ? 16 : 32)
 
@@ -110,10 +106,10 @@ export function VoidInput({ currentViewPosition, onExplore }) {
 
     setStatus('loading')
     try {
-      
+
       // Pass the current view position to API
       await api.createCast(text.trim(), currentViewPosition)
-      
+
       setText('')
       setStatus('success')
       if (!hasVirtualKeyboard) setTimeout(() => inputRef.current?.focus(), 100)
@@ -157,23 +153,6 @@ export function VoidInput({ currentViewPosition, onExplore }) {
       <button onClick={handleShare} style={buttonStyle}>{copied ? <Check size={18} /> : <Link size={18} />}</button>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', justifyContent: 'flex-end' }}>
-        {/* Line indicator */}
-        <div style={{ display: 'flex', gap: '4px', paddingLeft: '2px' }}>
-          {Array.from({ length: VITE_MAX_LINES }).map((_, i) => (
-            <div
-              key={i}
-              style={{
-                width: '24px',
-                height: '3px',
-                borderRadius: '2px',
-                background: i < lineCount
-                  ? isOverLimit ? '#ff6b6b' : 'rgba(255,255,255,0.7)'
-                  : 'rgba(255,255,255,0.15)',
-                transition: 'background 0.2s ease',
-              }}
-            />
-          ))}
-        </div>
 
         {/* Input + submit row */}
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
@@ -215,7 +194,7 @@ export function VoidInput({ currentViewPosition, onExplore }) {
     {/* Overflow warning */}
     {isOverLimit && (
       <p style={{ color: 'rgba(255,100,100,0.8)', fontSize: '0.75rem', margin: 0 }}>
-        Message too long — max {VITE_MAX_LINES * VITE_MAX_LINE_LENGTH} characters
+        Message too long — max {MAX_LINES * MAX_LINE_LENGTH} characters
       </p>
     )}
     {/* Rate limit warning */}

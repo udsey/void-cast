@@ -19,12 +19,3 @@ primary_region = 'syd'
   cpus = 1
   memory_mb = 256
   count = 1
-
-[build.args]
-  VITE_MAX_LINE_LENGTH = "10"
-  VITE_MAX_LINES = "30"
-  VITE_SHRINK_DURATION = "3000"
-  VITE_NEW_CAST_SIZE_MULT = "16"
-  VITE_INITIAL_ZOOM = "0.7"
-  VITE_IDLE_TIMEOUT = "300000"
-  VITE_INPUT_PLACEHOLDER = "into the void..."
